@@ -38,14 +38,7 @@ header{background:var(--ink);color:#fff;padding:10px 12px 7px;flex-shrink:0}
 .trs{color:var(--gold);margin:0 3px;font-size:10px}
 
 /* TABS */
-.tbar{background:#111;padding:6px 10px;display:flex;gap:5px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
-.tbar::-webkit-scrollbar{display:none}
-.tp{display:inline-flex;align-items:center;padding:5px 12px;border-radius:13px;font-size:clamp(11px,2.8vw,13px);font-weight:500;cursor:pointer;border:1.5px solid;white-space:nowrap;flex-shrink:0}
-.tp.male{background:var(--blue-lt);color:var(--blue-dk);border-color:var(--blue)}
-.tp.female{background:var(--pink-lt);color:var(--pink-dk);border-color:var(--pink)}
-.tp.other{background:var(--gray-lt);color:var(--gray-dk);border-color:var(--gray)}
-.tp.dead{color:var(--red)!important}
-.tp.act{background:var(--gold)!important;border-color:var(--gold)!important;color:var(--ink)!important}
+
 
 /* CANVAS */
 #cwrap{flex:1;overflow:hidden;position:relative;background:var(--cream);cursor:grab;touch-action:none}
@@ -140,7 +133,6 @@ header{background:var(--ink);color:#fff;padding:10px 12px 7px;flex-shrink:0}
   <div id="trail"></div>
 </header>
 
-<div class="tbar" id="tabs"></div>
 <div id="cwrap">
   <div id="mover"><svg id="lsvg"></svg></div>
   <div class="ftbar">
@@ -338,10 +330,8 @@ function isTabVis(p){
 // Combined visibility
 function vis(p){
   if(!p) return false;
-  if(filter==='live'&&p.deceased) return false;
-  if(focusId){
-    return p.id===focusId || isDescOf(p.id,focusId);
-  }
+  if(p.deceased && filter==='live') return false;
+  if(focusId) return p.id===focusId || isDescOf(p.id,focusId);
   if(tabRoot) return isDescOf(p.id,tabRoot);
   return true;
 }
@@ -495,9 +485,30 @@ function setOri(o){
 
 function setFilter(f){
   filter=f; clearLC();
+  if(f==='all'){
+    // Restore full tree
+    focusId=null; tabRoot=null;
+    document.getElementById('tBack').style.display='none';
+    document.getElementById('tAll').style.display='block';
+    document.getElementById('tLive').style.display='block';
+    document.querySelectorAll('.tp').forEach(function(b){ b.classList.remove('act'); });
+    // Collapse gen4+ for readability
+    Object.values(P).forEach(function(p){ if(p.depth>=4) collapsed.add(p.id); });
+  } else {
+    collapsed=new Set(); // expand all for living view
+  }
   document.getElementById('tAll').classList.toggle('act',f==='all');
   document.getElementById('tLive').classList.toggle('act',f==='live');
-  collapsed=new Set(); renderTree(); resetView();
+  renderTree();
+  setTimeout(function(){
+    var cw=parseInt(mover.style.width)||800;
+    if(f==='all'){
+      sc=mob?0.45:0.32;
+      tx=(cwrap.clientWidth-cw*sc)/2; ty=30; applyT();
+    } else {
+      resetView();
+    }
+  },100);
 }
 
 // "Show my family branch" button in profile panel
@@ -522,28 +533,8 @@ function clearFocus(){
   renderTree(); resetView();
 }
 
-// TABS: Gen 3 only
 function buildTabs(){
-  var bar=document.getElementById('tabs'); bar.innerHTML='';
-  var g3=Object.values(P).filter(function(p){ return p.depth===3; })
-    .sort(function(a,b){ return +a.id.slice(1)-+b.id.slice(1); });
-  g3.forEach(function(p){
-    var d=document.createElement('div');
-    d.className='tp '+sexCls(p)+(p.deceased?' dead':'');
-    d.textContent=p.name;
-    d.onclick=function(){
-      tabRoot=p.id; focusId=null; clearLC(); collapsed=new Set();
-      activeRoot=p.id;
-      document.getElementById('tBack').style.display='block';
-      document.getElementById('tAll').style.display='none';
-      document.getElementById('tLive').style.display='none';
-      document.querySelectorAll('.tp').forEach(function(b){ b.classList.remove('act'); });
-      d.classList.add('act');
-      renderTree(); resetView();
-    };
-    bar.appendChild(d);
-  });
-  // Default: full tree, collapse gen 4+
+  // No tabs — start full tree from Ratanshi
   var root=Object.values(P).find(function(p){ return p.depth===0; });
   if(root){
     tabRoot=null; focusId=null; activeRoot=root.id;
