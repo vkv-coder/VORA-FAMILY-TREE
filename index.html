@@ -2,72 +2,79 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Ratanshi Dada Family Tree</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#faf9f5}
+body{margin:0;font-family:Arial;background:#faf9f5;overflow:hidden}
 
-/* ===== HEADER ===== */
+/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
 align-items:center;
 background:#111;
 color:#fff;
-padding:15px 20px;
+padding:18px 20px;
 }
 
 .left{font-size:20px;font-weight:bold}
-.center{flex:1;text-align:center;color:#d4af37;font-size:20px}
+.center{flex:1;text-align:center;color:#d4af37;font-size:22px}
 
 .right button{
-margin-left:8px;
-padding:8px 12px;
+margin-left:10px;
+padding:10px 14px;
 border:none;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
-font-size:13px;
+font-size:14px;
 }
 
 .map{background:#ffe8a1;font-weight:bold}
 
-/* ===== TREE ===== */
-#cw{height:calc(100vh - 70px);overflow:hidden;position:relative}
-#mv{position:absolute}
+/* TREE */
+#cw{height:calc(100vh - 90px);overflow:hidden;position:relative;cursor:grab}
+#mv{position:absolute;transform-origin:0 0}
 
-/* node */
+/* NODE */
 .nd{position:absolute}
 .np{
-padding:6px 10px;
-border-radius:8px;
+padding:8px 12px;
+border-radius:10px;
 border:2px solid #333;
 background:#fff;
 text-align:center;
-font-size:12px;
+font-size:14px;
+min-width:100px;
 }
-
 .dead{color:red}
-.star{font-size:10px;color:#999}
+.star{font-size:11px;color:#999}
 
-/* toolbar */
+/* TOOLBAR */
 .ft{
 position:absolute;
-top:10px;
+top:15px;
 left:50%;
 transform:translateX(-50%);
 background:#fff;
-padding:5px;
-border-radius:10px;
+padding:8px;
+border-radius:12px;
+box-shadow:0 2px 10px rgba(0,0,0,0.2);
 }
-
 .fb{
 border:none;
-padding:5px 10px;
+padding:6px 12px;
 cursor:pointer;
 }
-
 .act{background:#000;color:#fff}
+
+/* SEARCH */
+.search{
+position:absolute;
+bottom:15px;
+left:50%;
+transform:translateX(-50%);
+}
 </style>
 </head>
 
@@ -75,12 +82,10 @@ cursor:pointer;
 
 <header>
 <div class="left">Ratanshi Dada Family</div>
-
 <div class="center">🙏 Shree Bahuchar Matay Namah 🙏</div>
-
 <div class="right">
-<button>Ritual</button>
-<button>Preamble</button>
+<button onclick="window.open('rituals.pdf')">Ritual</button>
+<button onclick="window.open('preamble.pdf')">Preamble</button>
 <button class="map" onclick="window.open('https://maps.google.com/?q=Dholidhar Dhrangadhra')">
 📍 Kuldevi Location
 </button>
@@ -91,41 +96,48 @@ cursor:pointer;
 <div id="mv"></div>
 
 <div class="ft">
-<button class="fb act" onclick="setMode('all')" id="bAll">All</button>
-<button class="fb" onclick="setMode('live')" id="bLive">Living</button>
+<button class="fb act" id="bAll" onclick="setMode('all')">All</button>
+<button class="fb" id="bLive" onclick="setMode('live')">Living</button>
+</div>
+
+<div class="search">
+<input id="search" placeholder="Search..." oninput="searchNode()">
 </div>
 </div>
 
 <script>
 
-/* ===== YOUR ORIGINAL DATA (SHORT SAMPLE — KEEP YOUR FULL DATA HERE) ===== */
-const FD = {
-  individuals:{
-    I1:{name:"VIJAY VORA",deceased:false,depth:5},
-    I2:{name:"Kantilal",deceased:true,depth:4},
-    I3:{name:"Vrajlal",deceased:true,depth:3}
-  }
+/* ===== SAMPLE DATA (REPLACE WITH YOUR FULL FD IF NEEDED) ===== */
+const FD={
+individuals:{
+I1:{name:"RATANSHI",depth:0,deceased:true},
+I2:{name:"THANA",depth:1,deceased:true},
+I3:{name:"KANA",depth:2,deceased:true},
+I4:{name:"JIVA",depth:3,deceased:true},
+I5:{name:"PUNJA",depth:4,deceased:true},
+I6:{name:"JUTHA",depth:5,deceased:true},
+I7:{name:"KALJI",depth:6,deceased:true},
+I8:{name:"VRAJLAL",depth:7,deceased:true},
+I9:{name:"KANTILAL",depth:8,deceased:true},
+I10:{name:"VIJAY VORA",depth:9,deceased:false}
+}
 }
 
-/* ===== MODE ===== */
+/* MODE */
 let mode="all"
+let scale=1,x=0,y=0
 
-/* ===== SWITCH ===== */
 function setMode(m){
 mode=m
-document.getElementById("bAll").classList.remove("act")
-document.getElementById("bLive").classList.remove("act")
-
-if(m==="all") document.getElementById("bAll").classList.add("act")
-if(m==="live") document.getElementById("bLive").classList.add("act")
-
+bAll.classList.remove("act")
+bLive.classList.remove("act")
+if(m==="all")bAll.classList.add("act")
+if(m==="live")bLive.classList.add("act")
 render()
 }
 
-/* ===== RENDER ===== */
+/* RENDER */
 function render(){
-
-const mv=document.getElementById("mv")
 mv.innerHTML=""
 
 Object.values(FD.individuals).forEach((p,i)=>{
@@ -136,9 +148,8 @@ nd.className="nd"
 let np=document.createElement("div")
 np.className="np"
 
-if(p.deceased) np.classList.add("dead")
+if(p.deceased)np.classList.add("dead")
 
-/* ===== CORE FIX ===== */
 if(mode==="live" && p.deceased){
 np.innerHTML="*"
 np.classList.add("star")
@@ -148,14 +159,40 @@ np.innerHTML=p.name
 
 nd.appendChild(np)
 
-/* position */
-nd.style.left=(i*140)+"px"
-nd.style.top=(p.depth*80)+"px"
+nd.style.left=(i*160)+"px"
+nd.style.top=(p.depth*100)+"px"
 
 mv.appendChild(nd)
 
 })
+}
 
+/* SEARCH */
+function searchNode(){
+let v=search.value.toLowerCase()
+document.querySelectorAll(".np").forEach(n=>{
+n.style.background=n.innerText.toLowerCase().includes(v)?"yellow":""
+})
+}
+
+/* PAN */
+cw.onmousedown=e=>{
+let sx=e.clientX-x,sy=e.clientY-y
+function move(ev){
+x=ev.clientX-sx
+y=ev.clientY-sy
+mv.style.transform=`translate(${x}px,${y}px) scale(${scale})`
+}
+document.addEventListener("mousemove",move)
+document.addEventListener("mouseup",()=>document.removeEventListener("mousemove",move),{once:true})
+}
+
+/* ZOOM */
+cw.onwheel=e=>{
+e.preventDefault()
+scale+=e.deltaY*-0.001
+scale=Math.max(0.5,Math.min(2,scale))
+mv.style.transform=`translate(${x}px,${y}px) scale(${scale})`
 }
 
 render()
