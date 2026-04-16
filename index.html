@@ -3,76 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vora Family Tree</title>
+<title>Ratanshi Dada Family Tree</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@400;500;600&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --blue:#1A5FAD;--blue-lt:#E3EEF8;--blue-dk:#0B3F74;
   --pink:#A03365;--pink-lt:#F5E3EE;--pink-dk:#6E1F44;
   --gray:#7A7870;--gray-lt:#F0EEE8;--gray-dk:#3a3830;
-  --red:#C0392B;
-  --gold:#C8A96A;
-  --ink:#1C1B19;--muted:#8A8880;--line:#D8D5CC;
-  --cream:#FAF9F5;
+  --red:#C0392B;--gold:#C8A96A;
+  --ink:#1C1B19;--muted:#8A8880;--line:#D8D5CC;--cream:#FAF9F5;
 }
-html,body{height:100%;overflow:hidden}
+html,body{height:100%;overflow:hidden;touch-action:none}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;height:100vh}
 
 /* Header */
-header{background:var(--ink);color:#fff;padding:9px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
-.logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;flex:1;white-space:nowrap}
-.logo small{color:var(--gold);font-size:10px;font-weight:400;display:block;letter-spacing:.3px;font-family:'DM Sans',sans-serif}
-.hbtns{display:flex;gap:5px;flex-wrap:wrap}
-.hbtn{background:rgba(255,255,255,0.13);border:none;color:#fff;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;line-height:1.2}
+header{background:var(--ink);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo{flex:1}
+.logo h1{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;line-height:1.2;color:#fff}
+.logo p{font-size:10px;color:var(--gold);letter-spacing:.3px;margin-top:1px}
+.hbtns{display:flex;gap:4px}
+.hbtn{background:rgba(255,255,255,0.13);border:none;color:#fff;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .hbtn.act{background:var(--gold);color:var(--ink);font-weight:600}
 
 /* Tabs */
 .tbar{background:#111;padding:7px 12px;display:flex;gap:6px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
 .tbar::-webkit-scrollbar{display:none}
-.tpill{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:4px 12px;border-radius:16px;font-size:11.5px;font-weight:500;cursor:pointer;border:1.5px solid;white-space:nowrap;flex-shrink:0;overflow:hidden}
-.tpill.male{background:var(--blue-lt);color:var(--blue-dk);border-color:var(--blue)}
-.tpill.female{background:var(--pink-lt);color:var(--pink-dk);border-color:var(--pink)}
-.tpill.other{background:var(--gray-lt);color:var(--gray-dk);border-color:var(--gray)}
-.tpill.dead .tname{color:var(--red)!important}
-.tpill.act{background:var(--gold)!important;border-color:var(--gold)!important}
-.tpill.act .tname{color:var(--ink)!important}
+.tp{position:relative;display:inline-flex;align-items:center;padding:4px 11px;border-radius:14px;font-size:11.5px;font-weight:500;cursor:pointer;border:1.5px solid;white-space:nowrap;flex-shrink:0}
+.tp.male{background:var(--blue-lt);color:var(--blue-dk);border-color:var(--blue)}
+.tp.female{background:var(--pink-lt);color:var(--pink-dk);border-color:var(--pink)}
+.tp.other{background:var(--gray-lt);color:var(--gray-dk);border-color:var(--gray)}
+.tp.dead span{color:var(--red)}
+.tp.act{background:var(--gold)!important;border-color:var(--gold)!important}
+.tp.act span{color:var(--ink)!important}
 
-/* Canvas */
-#cwrap{flex:1;overflow:hidden;position:relative;background:var(--cream)}
+/* Canvas wrapper - this is what gets panned */
+#cwrap{flex:1;overflow:hidden;position:relative;background:var(--cream);cursor:grab}
+#cwrap.grabbing{cursor:grabbing}
+/* The actual canvas that moves */
 #canvas{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
 #lsvg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
 
-/* Node pill */
-.nd{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px}
-.npill{width:112px;min-height:50px;border-radius:10px;border:2px solid;font-size:11px;font-weight:500;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 6px;line-height:1.25;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.10);transition:transform .1s}
-.npill:active{transform:scale(0.95)}
+/* Node */
+.nd{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none}
+.npill{width:110px;min-height:50px;border-radius:10px;border:2px solid;font-size:11px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 5px;line-height:1.25;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.09);pointer-events:all}
 .npill.male{background:var(--blue-lt);border-color:var(--blue)}
 .npill.female{background:var(--pink-lt);border-color:var(--pink)}
 .npill.other{background:var(--gray-lt);border-color:var(--gray)}
-.npill .nname{font-weight:500;font-size:11px;line-height:1.25;word-break:break-word}
+.nname{font-weight:500;font-size:11px;word-break:break-word}
 .npill.male .nname{color:var(--blue-dk)}
 .npill.female .nname{color:var(--pink-dk)}
 .npill.other .nname{color:var(--gray-dk)}
 .npill.dead .nname{color:var(--red)!important}
-.npill .nage{font-size:10px;color:var(--muted);margin-top:1px}
-.xbtn{width:18px;height:18px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:var(--muted);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-shrink:0}
-.xbtn:active{background:var(--ink);color:#fff}
+.nage{font-size:9.5px;color:var(--muted);margin-top:1px}
+.xbtn{width:18px;height:18px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:var(--muted);font-weight:700;pointer-events:all;flex-shrink:0}
 .xbtn.hide{visibility:hidden}
 
-/* Toolbar */
-.toolbar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:40;background:rgba(255,255,255,0.95);border-radius:20px;padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.13);border:1px solid var(--line)}
-.tbtn{background:none;border:none;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;padding:3px 8px;border-radius:12px;color:var(--ink);font-weight:500;white-space:nowrap}
-.tbtn.act{background:var(--ink);color:#fff}
+/* Floating toolbar */
+.ftbar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:40;background:rgba(255,255,255,0.96);border-radius:18px;padding:5px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.12);border:1px solid var(--line);pointer-events:all}
+.ftbtn{background:none;border:none;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;padding:3px 9px;border-radius:10px;color:var(--ink);font-weight:500;white-space:nowrap}
+.ftbtn.act{background:var(--ink);color:#fff}
 
-/* Search */
-.sbar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.97);border-radius:20px;padding:7px 14px;border:1px solid var(--line);box-shadow:0 4px 16px rgba(0,0,0,0.13);z-index:40;width:calc(100% - 32px);max-width:320px}
+/* Search bar */
+.sbar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.97);border-radius:20px;padding:7px 14px;border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,0.12);z-index:40;width:calc(100% - 32px);max-width:300px;pointer-events:all}
 .sbar input{border:none;outline:none;font-size:13px;flex:1;background:transparent;font-family:'DM Sans',sans-serif}
 
 /* Profile panel */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,0.42);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .ov.open{display:flex}
 .panel{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:460px;max-height:87vh;overflow-y:auto;padding-bottom:24px}
 .phan{width:34px;height:4px;background:var(--line);border-radius:2px;margin:11px auto 4px}
@@ -81,7 +80,7 @@ header{background:var(--ink);color:#fff;padding:9px 12px;display:flex;align-item
 .pav.male{background:var(--blue-lt);color:var(--blue-dk);border:2px solid var(--blue)}
 .pav.female{background:var(--pink-lt);color:var(--pink-dk);border:2px solid var(--pink)}
 .pav.other{background:var(--gray-lt);color:var(--gray);border:2px solid var(--gray)}
-.pav.dead{border-color:var(--red)}
+.pav.dead{border-color:var(--red)!important}
 .pname{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;flex:1;line-height:1.2}
 .pname.dead{color:var(--red)}
 .psub{font-size:11px;color:var(--muted);margin-top:3px}
@@ -92,20 +91,18 @@ header{background:var(--ink);color:#fff;padding:9px 12px;display:flex;align-item
 .plbl{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);width:72px;flex-shrink:0;padding-top:2px}
 .pval{font-size:13px;font-weight:500;flex:1;line-height:1.4}
 .ppills{display:flex;flex-wrap:wrap;gap:5px}
-.pp{display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;border-radius:14px;font-size:11px;font-weight:500;border:1.5px solid;cursor:pointer}
-.pp:active{opacity:.7}
+.pp{display:inline-flex;align-items:center;padding:3px 9px;border-radius:13px;font-size:11px;font-weight:500;border:1.5px solid;cursor:pointer}
 .pp.male{background:var(--blue-lt);color:var(--blue-dk);border-color:var(--blue)}
 .pp.female{background:var(--pink-lt);color:var(--pink-dk);border-color:var(--pink)}
 .pp.other{background:var(--gray-lt);color:var(--gray-dk);border-color:var(--gray)}
 .pp.dead{color:var(--red)!important}
-.descbtn{display:block;margin:5px 15px 0;padding:10px;background:#f5f3ef;border:none;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;width:calc(100%-30px);text-align:center;font-family:'DM Sans',sans-serif;color:var(--ink);width:calc(100% - 30px)}
-.descbtn:active{background:var(--ink);color:#fff}
-.editbtn{display:block;margin:8px 15px 0;padding:10px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;width:calc(100% - 30px);text-align:center;font-family:'DM Sans',sans-serif}
+.dbtn{display:block;margin:8px 15px 0;padding:10px;background:#f5f3ef;border:none;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;width:calc(100% - 30px);text-align:center;font-family:'DM Sans',sans-serif;color:var(--ink)}
+.ebtn{display:block;margin:6px 15px 0;padding:10px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;width:calc(100% - 30px);text-align:center;font-family:'DM Sans',sans-serif}
 .inp{width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-top:3px}
 .inp:focus{border-color:var(--blue)}
 .sel{width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:#fff;margin-top:3px}
 .flbl{font-size:10px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);display:block;margin-top:9px}
-.savebtn{width:100%;padding:11px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;margin-top:12px;font-family:'DM Sans',sans-serif}
+.svbtn{width:100%;padding:11px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;margin-top:12px;font-family:'DM Sans',sans-serif}
 
 /* PIN */
 .pinov{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:center;justify-content:center}
@@ -113,29 +110,37 @@ header{background:var(--ink);color:#fff;padding:9px 12px;display:flex;align-item
 .pinbox{background:#fff;border-radius:14px;padding:24px 20px;width:270px;text-align:center}
 .pinbox h3{font-family:'Playfair Display',serif;font-size:16px;margin-bottom:4px}
 .pinbox p{font-size:12px;color:var(--muted);margin-bottom:14px}
-.pininp{width:100%;padding:11px;text-align:center;font-size:20px;letter-spacing:8px;border:1.5px solid var(--line);border-radius:8px;outline:none;margin-bottom:8px}
+.pininp{width:100%;padding:11px;text-align:center;font-size:20px;letter-spacing:8px;border:1.5px solid var(--line);border-radius:8px;outline:none;margin-bottom:8px;font-family:'DM Sans',sans-serif}
 .pininp:focus{border-color:var(--blue)}
 .pingo{width:100%;padding:11px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif}
-.pinerr{color:#c0392b;font-size:11px;margin-top:4px;min-height:15px}
+.pinerr{color:var(--red);font-size:11px;margin-top:4px;min-height:15px}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo">🌳 Vora Family Tree<small id="stat">253 members · 11 generations</small></div>
+  <div class="logo">
+    <h1>Ratanshi Dada (Dhrangadhra) Family</h1>
+    <p id="stat">253 members · 121 deceased · 132 living</p>
+  </div>
   <div class="hbtns">
     <button class="hbtn act" id="bv" onclick="setOri('v')">↕ Top</button>
     <button class="hbtn" id="bh" onclick="setOri('h')">↔ Side</button>
-    <button class="hbtn" onclick="resetView()">⌖ Centre</button>
+    <button class="hbtn" onclick="resetView()">⌖</button>
   </div>
 </header>
+
 <div class="tbar" id="tabs"></div>
+
 <div id="cwrap">
   <div id="canvas"><svg id="lsvg"></svg></div>
-  <div class="toolbar">
-    <button class="tbtn act" id="tAll" onclick="setFilter('all')">All</button>
-    <button class="tbtn" id="tLive" onclick="setFilter('live')">Living only</button>
-    <button class="tbtn" id="tDesc" onclick="clearDescFilter()" style="display:none">✕ Back to full tree</button>
+
+  <div class="ftbar">
+    <button class="ftbtn act" id="tAll" onclick="setFilter('all')">All</button>
+    <button class="ftbtn" id="tLive" onclick="setFilter('live')">🟢 Living only</button>
+    <button class="ftbtn" id="tBack" style="display:none" onclick="clearDesc()">✕ Full tree</button>
   </div>
+
   <div class="sbar">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="srch" placeholder="Search name or city…" oninput="doSearch(this.value)">
@@ -143,20 +148,21 @@ header{background:var(--ink);color:#fff;padding:9px 12px;display:flex;align-item
   </div>
 </div>
 
+<!-- Profile -->
 <div class="ov" id="ov" onclick="if(event.target===this)closePanel()">
   <div class="panel">
     <div class="phan"></div>
     <div class="phead" id="ph"></div>
     <div class="pbody" id="pb"></div>
-    <button class="descbtn" id="descbtn" onclick="viewDescendants()">🌿 View only descendants</button>
-    <button class="editbtn" onclick="startEdit()">✏ Edit Details</button>
+    <button class="dbtn" onclick="viewDesc()">🌿 View descendants only</button>
+    <button class="ebtn" onclick="startEdit()">✏ Edit Details</button>
   </div>
 </div>
 
+<!-- PIN -->
 <div class="pinov" id="pinov" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="pinbox">
-    <h3>🔐 Admin PIN</h3>
-    <p>Enter PIN to edit records</p>
+    <h3>🔐 Admin PIN</h3><p>Enter PIN to edit records</p>
     <input class="pininp" id="pininp" type="password" maxlength="4" placeholder="••••" oninput="if(this.value.length===4)chkPin()">
     <div class="pinerr" id="pinerr"></div>
     <button class="pingo" onclick="chkPin()">Unlock</button>
@@ -167,120 +173,124 @@ header{background:var(--ink);color:#fff;padding:9px 12px;display:flex;align-item
 const FD={"individuals":{"I1":{"id":"I1","name":"VIJAY VORA","sex":"M","deceased":false,"birth":"","death":"","city":"Vadodara","note":"","nick":"187","fams":["F133"],"famc":["F1"],"depth":9,"children":["I231","I232"],"spouses":[],"parents":["I2"]},"I2":{"id":"I2","name":"Kantilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"187","fams":["F1"],"famc":["F2"],"depth":8,"children":["I1"],"spouses":[],"parents":["I3"]},"I3":{"id":"I3","name":"Vrajlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F2","F4"],"famc":["F3"],"depth":7,"children":["I4","I5","I2"],"spouses":[],"parents":["I12"]},"I4":{"id":"I4","name":"Ramniklal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"185","fams":["F5"],"famc":["F4"],"depth":8,"children":["I7","I6"],"spouses":[],"parents":["I3"]},"I5":{"id":"I5","name":"Mukund","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"188","fams":["F6"],"famc":["F4"],"depth":8,"children":["I10","I9","I8"],"spouses":[],"parents":["I3"]},"I6":{"id":"I6","name":"Deepak","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"186","fams":[],"famc":["F5"],"depth":9,"children":[],"spouses":[],"parents":["I4"]},"I7":{"id":"I7","name":"Pradeep","sex":"M","deceased":false,"birth":"","death":"","city":"Andheri E","note":"","nick":"186","fams":["F7"],"famc":["F5"],"depth":9,"children":["I11"],"spouses":[],"parents":["I4"]},"I8":{"id":"I8","name":"AMit","sex":"Other","deceased":false,"birth":"","death":"","city":"Kandivali E","note":"","nick":"188","fams":[],"famc":["F6"],"depth":9,"children":[],"spouses":[],"parents":["I5"]},"I9":{"id":"I9","name":"Hemant","sex":"Other","deceased":false,"birth":"","death":"","city":"Kandivali E","note":"","nick":"188","fams":[],"famc":["F6"],"depth":9,"children":[],"spouses":[],"parents":["I5"]},"I10":{"id":"I10","name":"Hitendra","sex":"Other","deceased":false,"birth":"","death":"","city":"Kandivali E","note":"","nick":"188","fams":[],"famc":["F6"],"depth":9,"children":[],"spouses":[],"parents":["I5"]},"I11":{"id":"I11","name":"Jay","sex":"M","deceased":false,"birth":"","death":"","city":"Andheri E","note":"","nick":"186","fams":[],"famc":["F7"],"depth":10,"children":[],"spouses":[],"parents":["I7"]},"I12":{"id":"I12","name":"Kalji","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F3"],"famc":["F8"],"depth":6,"children":["I3","I13"],"spouses":[],"parents":["I14"]},"I13":{"id":"I13","name":"Chaturdas","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F15"],"famc":["F3"],"depth":7,"children":["I28","I20","I22","I21"],"spouses":[],"parents":["I12"]},"I14":{"id":"I14","name":"Jutha","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F8","F63"],"famc":["F9"],"depth":5,"children":["I12","I106","I107"],"spouses":[],"parents":["I15"]},"I15":{"id":"I15","name":"Punja","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F9","F41"],"famc":["F10"],"depth":4,"children":["I65","I14","I66"],"spouses":[],"parents":["I16"]},"I16":{"id":"I16","name":"JIva","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F10","F32"],"famc":["F11"],"depth":3,"children":["I15","I54"],"spouses":[],"parents":["I17"]},"I17":{"id":"I17","name":"Kana","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F11","F26"],"famc":["F12"],"depth":2,"children":["I16","I43","I42"],"spouses":[],"parents":["I18"]},"I18":{"id":"I18","name":"Thana","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F12","F25"],"famc":["F13"],"depth":1,"children":["I17","I41"],"spouses":[],"parents":["I19"]},"I19":{"id":"I19","name":"RATANSHI","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F13"],"famc":["F14"],"depth":0,"children":["I18"],"spouses":[],"parents":[]},"I20":{"id":"I20","name":"Shantilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F16"],"famc":["F15"],"depth":8,"children":["I24","I23"],"spouses":[],"parents":["I13"]},"I21":{"id":"I21","name":"Kantilal","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"179","fams":[],"famc":["F15"],"depth":8,"children":[],"spouses":[],"parents":["I13"]},"I22":{"id":"I22","name":"Bachulal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"180","fams":["F20"],"famc":["F15"],"depth":8,"children":["I32","I30","I34","I29","I33","I31"],"spouses":[],"parents":["I13"]},"I23":{"id":"I23","name":"Dalsukh","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"177","fams":["F18"],"famc":["F16"],"depth":9,"children":["I26"],"spouses":[],"parents":["I20"]},"I24":{"id":"I24","name":"Rasik","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"178","fams":["F17"],"famc":["F16"],"depth":9,"children":["I25"],"spouses":[],"parents":["I20"]},"I25":{"id":"I25","name":"Manoj","sex":"M","deceased":false,"birth":"","death":"","city":"USA","note":"","nick":"178","fams":[],"famc":["F17"],"depth":10,"children":[],"spouses":[],"parents":["I24"]},"I26":{"id":"I26","name":"Bimal","sex":"M","deceased":false,"birth":"","death":"","city":"Santacruz","note":"","nick":"177","fams":["F19"],"famc":["F18"],"depth":10,"children":["I27"],"spouses":[],"parents":["I23"]},"I27":{"id":"I27","name":"Mihir","sex":"M","deceased":false,"birth":"","death":"","city":"Santacruz","note":"","nick":"177","fams":[],"famc":["F19"],"depth":11,"children":[],"spouses":[],"parents":["I26"]},"I28":{"id":"I28","name":"Premchand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"184","fams":["F21"],"famc":["F15"],"depth":8,"children":["I35"],"spouses":[],"parents":["I13"]},"I29":{"id":"I29","name":"Jagdish","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"183","fams":["F23"],"famc":["F20"],"depth":9,"children":["I39","I38"],"spouses":[],"parents":["I22"]},"I30":{"id":"I30","name":"Rajni","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F20"],"depth":9,"children":[],"spouses":[],"parents":["I22"]},"I31":{"id":"I31","name":"Kirti","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"182","fams":["F134"],"famc":["F20"],"depth":9,"children":["I233"],"spouses":[],"parents":["I22"]},"I32":{"id":"I32","name":"Bharat","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F24"],"famc":["F20"],"depth":9,"children":["I40"],"spouses":[],"parents":["I22"]},"I33":{"id":"I33","name":"Mahendra","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F20"],"depth":9,"children":[],"spouses":[],"parents":["I22"]},"I34":{"id":"I34","name":"Mukesh","sex":"M","deceased":false,"birth":"","death":"","city":"Surendranagar","note":"","nick":"181","fams":[],"famc":["F20"],"depth":9,"children":[],"spouses":[],"parents":["I22"]},"I35":{"id":"I35","name":"Shirish","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"184","fams":["F22"],"famc":["F21"],"depth":9,"children":["I37","I36"],"spouses":[],"parents":["I28"]},"I36":{"id":"I36","name":"Rahul","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"184","fams":[],"famc":["F22"],"depth":10,"children":[],"spouses":[],"parents":["I35"]},"I37":{"id":"I37","name":"Yash","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"184","fams":[],"famc":["F22"],"depth":10,"children":[],"spouses":[],"parents":["I35"]},"I38":{"id":"I38","name":"Bhupesh","sex":"M","deceased":false,"birth":"","death":"","city":"Andheri E","note":"","nick":"183","fams":[],"famc":["F23"],"depth":10,"children":[],"spouses":[],"parents":["I29"]},"I39":{"id":"I39","name":"Manish","sex":"M","deceased":false,"birth":"","death":"","city":"Andheri E","note":"","nick":"183","fams":[],"famc":["F23"],"depth":10,"children":[],"spouses":[],"parents":["I29"]},"I40":{"id":"I40","name":"Krunal","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"180","fams":[],"famc":["F24"],"depth":10,"children":[],"spouses":[],"parents":["I32"]},"I41":{"id":"I41","name":"Kalyan","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F69"],"famc":["F25"],"depth":2,"children":["I116","I115","I114"],"spouses":[],"parents":["I18"]},"I42":{"id":"I42","name":"Keshavlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F27"],"famc":["F26"],"depth":3,"children":["I44"],"spouses":[],"parents":["I17"]},"I43":{"id":"I43","name":"Vashram","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F26"],"depth":3,"children":[],"spouses":[],"parents":["I17"]},"I44":{"id":"I44","name":"Uka","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F28"],"famc":["F27"],"depth":4,"children":["I46","I45"],"spouses":[],"parents":["I42"]},"I45":{"id":"I45","name":"Manekchand","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F28"],"depth":5,"children":[],"spouses":[],"parents":["I44"]},"I46":{"id":"I46","name":"Rajpal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F29"],"famc":["F28"],"depth":5,"children":["I47","I49","I48","I50"],"spouses":[],"parents":["I44"]},"I47":{"id":"I47","name":"Amulakh","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"158","fams":[],"famc":["F29"],"depth":6,"children":[],"spouses":[],"parents":["I46"]},"I48":{"id":"I48","name":"Vadilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F30"],"famc":["F29"],"depth":6,"children":["I51","I52"],"spouses":[],"parents":["I46"]},"I49":{"id":"I49","name":"Mohan","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F29"],"depth":6,"children":[],"spouses":[],"parents":["I46"]},"I50":{"id":"I50","name":"Raichand","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F29"],"depth":6,"children":[],"spouses":[],"parents":["I46"]},"I51":{"id":"I51","name":"Vasant","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"158","fams":["F31"],"famc":["F30"],"depth":7,"children":["I53"],"spouses":[],"parents":["I48"]},"I52":{"id":"I52","name":"Tarachand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F30"],"depth":7,"children":[],"spouses":[],"parents":["I48"]},"I53":{"id":"I53","name":"Sanjay","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"158","fams":["F137"],"famc":["F31"],"depth":8,"children":["I239","I238"],"spouses":[],"parents":["I51"]},"I54":{"id":"I54","name":"Pitamber","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F33"],"famc":["F32"],"depth":4,"children":["I55"],"spouses":[],"parents":["I16"]},"I55":{"id":"I55","name":"Thakarsi","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F34"],"famc":["F33"],"depth":5,"children":["I56"],"spouses":[],"parents":["I54"]},"I56":{"id":"I56","name":"Jagjivan","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F35"],"famc":["F34"],"depth":6,"children":["I57"],"spouses":[],"parents":["I55"]},"I57":{"id":"I57","name":"Bhuder","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F36"],"famc":["F35"],"depth":7,"children":["I58"],"spouses":[],"parents":["I56"]},"I58":{"id":"I58","name":"Jayantilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"159","fams":["F37"],"famc":["F36"],"depth":8,"children":["I62","I59","I61"],"spouses":[],"parents":["I57"]},"I59":{"id":"I59","name":"Rajni","sex":"M","deceased":false,"birth":"","death":"","city":"Malad W","note":"","nick":"159","fams":["F38"],"famc":["F37"],"depth":9,"children":["I60"],"spouses":[],"parents":["I58"]},"I60":{"id":"I60","name":"Jignesh","sex":"M","deceased":false,"birth":"","death":"","city":"Malad","note":"","nick":"159","fams":["F138"],"famc":["F38"],"depth":10,"children":["I240"],"spouses":[],"parents":["I59"]},"I61":{"id":"I61","name":"Dhararendra","sex":"M","deceased":false,"birth":"","death":"","city":"Vasai","note":"","nick":"160","fams":["F39"],"famc":["F37"],"depth":9,"children":["I63"],"spouses":[],"parents":["I58"]},"I62":{"id":"I62","name":"Vasant","sex":"M","deceased":false,"birth":"","death":"","city":"Vasai","note":"","nick":"161","fams":["F40"],"famc":["F37"],"depth":9,"children":["I64"],"spouses":[],"parents":["I58"]},"I63":{"id":"I63","name":"Ankit","sex":"M","deceased":false,"birth":"","death":"","city":"Vasai","note":"","nick":"160","fams":[],"famc":["F39"],"depth":10,"children":[],"spouses":[],"parents":["I61"]},"I64":{"id":"I64","name":"Jay","sex":"M","deceased":false,"birth":"","death":"","city":"Vasai","note":"","nick":"161","fams":[],"famc":["F40"],"depth":10,"children":[],"spouses":[],"parents":["I62"]},"I65":{"id":"I65","name":"Lakhmichand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F42"],"famc":["F41"],"depth":5,"children":["I67"],"spouses":[],"parents":["I15"]},"I66":{"id":"I66","name":"Khoda","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F44"],"famc":["F41"],"depth":5,"children":["I72","I70","I69","I71"],"spouses":[],"parents":["I15"]},"I67":{"id":"I67","name":"Lavji","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F43"],"famc":["F42"],"depth":6,"children":["I68"],"spouses":[],"parents":["I65"]},"I68":{"id":"I68","name":"Vithal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F65"],"famc":["F43"],"depth":7,"children":["I110"],"spouses":[],"parents":["I67"]},"I69":{"id":"I69","name":"Savchand","sex":"F","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F45"],"famc":["F44"],"depth":6,"children":["I73","I74"],"spouses":[],"parents":["I66"]},"I70":{"id":"I70","name":"Fulchand","sex":"F","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F46"],"famc":["F44"],"depth":6,"children":["I75"],"spouses":[],"parents":["I66"]},"I71":{"id":"I71","name":"Kunvarji","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F44"],"depth":6,"children":[],"spouses":[],"parents":["I66"]},"I72":{"id":"I72","name":"Surchand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F47"],"famc":["F44"],"depth":6,"children":["I76","I77"],"spouses":[],"parents":["I66"]},"I73":{"id":"I73","name":"Kalu","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F45"],"depth":7,"children":[],"spouses":[],"parents":["I69"]},"I74":{"id":"I74","name":"Magan","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F45"],"depth":7,"children":[],"spouses":[],"parents":["I69"]},"I75":{"id":"I75","name":"Nagar","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F46"],"depth":7,"children":[],"spouses":[],"parents":["I70"]},"I76":{"id":"I76","name":"Parshottam","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F48"],"famc":["F47"],"depth":7,"children":["I79","I81","I80","I78"],"spouses":[],"parents":["I72"]},"I77":{"id":"I77","name":"Somchand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F61"],"famc":["F47"],"depth":7,"children":["I103","I102"],"spouses":[],"parents":["I72"]},"I78":{"id":"I78","name":"Fatechand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"163","fams":["F49"],"famc":["F48"],"depth":8,"children":["I85","I84","I82"],"spouses":[],"parents":["I76"]},"I79":{"id":"I79","name":"Bhogilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"166","fams":["F52"],"famc":["F48"],"depth":8,"children":["I87","I88","I89","I90"],"spouses":[],"parents":["I76"]},"I80":{"id":"I80","name":"Rasiklal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F55","F56"],"famc":["F48"],"depth":8,"children":["I96","I95","I97"],"spouses":[],"parents":["I76"]},"I81":{"id":"I81","name":"Bhagwanlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F59"],"famc":["F48"],"depth":8,"children":["I100"],"spouses":[],"parents":["I76"]},"I82":{"id":"I82","name":"Dhirajlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"165","fams":["F50"],"famc":["F49"],"depth":9,"children":["I83"],"spouses":[],"parents":["I78"]},"I83":{"id":"I83","name":"Harsh","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali","note":"","nick":"165","fams":["F144"],"famc":["F50"],"depth":10,"children":["I248"],"spouses":[],"parents":["I82"]},"I84":{"id":"I84","name":"Pradeep","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"163","fams":["F51"],"famc":["F49"],"depth":9,"children":["I86"],"spouses":[],"parents":["I78"]},"I85":{"id":"I85","name":"Mahendra","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"164","fams":[],"famc":["F49"],"depth":9,"children":[],"spouses":[],"parents":["I78"]},"I86":{"id":"I86","name":"Jinesh","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"163","fams":[],"famc":["F51"],"depth":10,"children":[],"spouses":[],"parents":["I84"]},"I87":{"id":"I87","name":"Jitendra","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"167","fams":["F53"],"famc":["F52"],"depth":9,"children":["I92","I91"],"spouses":[],"parents":["I79"]},"I88":{"id":"I88","name":"Haresh","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"168","fams":["F54"],"famc":["F52"],"depth":9,"children":["I93","I94"],"spouses":[],"parents":["I79"]},"I89":{"id":"I89","name":"Jayesh","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"166","fams":[],"famc":["F52"],"depth":9,"children":[],"spouses":[],"parents":["I79"]},"I90":{"id":"I90","name":"Tushar","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"166","fams":[],"famc":["F52"],"depth":9,"children":[],"spouses":[],"parents":["I79"]},"I91":{"id":"I91","name":"Abhik","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"167","fams":[],"famc":["F53"],"depth":10,"children":[],"spouses":[],"parents":["I87"]},"I92":{"id":"I92","name":"Hemang","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali W","note":"","nick":"167","fams":["F145"],"famc":["F53"],"depth":10,"children":["I249","I250"],"spouses":[],"parents":["I87"]},"I93":{"id":"I93","name":"Viral","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"168","fams":[],"famc":["F54"],"depth":10,"children":[],"spouses":[],"parents":["I88"]},"I94":{"id":"I94","name":"Nimish","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"168","fams":[],"famc":["F54"],"depth":10,"children":[],"spouses":[],"parents":["I88"]},"I95":{"id":"I95","name":"JYotindra","sex":"M","deceased":false,"birth":"","death":"","city":"Vile Parle W","note":"","nick":"169","fams":["F58"],"famc":["F55"],"depth":9,"children":["I99"],"spouses":[],"parents":["I80"]},"I96":{"id":"I96","name":"Hemendra","sex":"M","deceased":false,"birth":"","death":"","city":"Vile Parle W","note":"","nick":"170","fams":[],"famc":["F56"],"depth":9,"children":[],"spouses":[],"parents":["I80"]},"I97":{"id":"I97","name":"Dipak","sex":"M","deceased":false,"birth":"","death":"","city":"Vile Parle W","note":"","nick":"171","fams":["F57"],"famc":["F56"],"depth":9,"children":["I98"],"spouses":[],"parents":["I80"]},"I98":{"id":"I98","name":"Chirag","sex":"M","deceased":false,"birth":"","death":"","city":"Vile Parle W","note":"","nick":"171","fams":[],"famc":["F57"],"depth":10,"children":[],"spouses":[],"parents":["I97"]},"I99":{"id":"I99","name":"Hiren","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"169","fams":[],"famc":["F58"],"depth":10,"children":[],"spouses":[],"parents":["I95"]},"I100":{"id":"I100","name":"Vidyut","sex":"M","deceased":false,"birth":"","death":"","city":"Pedar Road","note":"","nick":"172","fams":["F60"],"famc":["F59"],"depth":9,"children":["I101"],"spouses":[],"parents":["I81"]},"I101":{"id":"I101","name":"Ketan","sex":"M","deceased":false,"birth":"","death":"","city":"Pedar Road","note":"","nick":"172","fams":["F140"],"famc":["F60"],"depth":10,"children":["I242"],"spouses":[],"parents":["I100"]},"I102":{"id":"I102","name":"Shantilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"173","fams":["F68"],"famc":["F61"],"depth":8,"children":["I113"],"spouses":[],"parents":["I77"]},"I103":{"id":"I103","name":"Manu","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"175","fams":["F62"],"famc":["F61"],"depth":8,"children":["I104","I105"],"spouses":[],"parents":["I77"]},"I104":{"id":"I104","name":"Pradyut","sex":"M","deceased":false,"birth":"","death":"","city":"Kolkatta","note":"","nick":"175","fams":[],"famc":["F62"],"depth":9,"children":[],"spouses":[],"parents":["I103"]},"I105":{"id":"I105","name":"Vidyut","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"176","fams":["F64"],"famc":["F62"],"depth":9,"children":["I108","I109"],"spouses":[],"parents":["I103"]},"I106":{"id":"I106","name":"Ujamsi","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F63"],"depth":6,"children":[],"spouses":[],"parents":["I14"]},"I107":{"id":"I107","name":"Popat","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F63"],"depth":6,"children":[],"spouses":[],"parents":["I14"]},"I108":{"id":"I108","name":"Aakash","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"176","fams":[],"famc":["F64"],"depth":10,"children":[],"spouses":[],"parents":["I105"]},"I109":{"id":"I109","name":"Akshat","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"176","fams":[],"famc":["F64"],"depth":10,"children":[],"spouses":[],"parents":["I105"]},"I110":{"id":"I110","name":"Jechand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F66"],"famc":["F65"],"depth":8,"children":["I111"],"spouses":[],"parents":["I68"]},"I111":{"id":"I111","name":"Prabhakar","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"Bio notes: 162","nick":"162","fams":["F67"],"famc":["F66"],"depth":9,"children":["I112"],"spouses":[],"parents":["I110"]},"I112":{"id":"I112","name":"Himanshu","sex":"M","deceased":false,"birth":"","death":"","city":"Santacruz","note":"","nick":"162","fams":["F139"],"famc":["F67"],"depth":10,"children":["I241"],"spouses":[],"parents":["I111"]},"I113":{"id":"I113","name":"Pradeep","sex":"M","deceased":false,"birth":"","death":"","city":"Kolkatta","note":"","nick":"174","fams":[],"famc":["F68"],"depth":9,"children":[],"spouses":[],"parents":["I102"]},"I114":{"id":"I114","name":"Shanta","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F70"],"famc":["F69"],"depth":3,"children":["I118","I119","I117"],"spouses":[],"parents":["I41"]},"I115":{"id":"I115","name":"Devchand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F115"],"famc":["F69"],"depth":3,"children":["I201"],"spouses":[],"parents":["I41"]},"I116":{"id":"I116","name":"Jechand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F120"],"famc":["F69"],"depth":3,"children":["I212","I208"],"spouses":[],"parents":["I41"]},"I117":{"id":"I117","name":"Karsan","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F71"],"famc":["F70"],"depth":4,"children":["I126","I125","I124","I120"],"spouses":[],"parents":["I114"]},"I118":{"id":"I118","name":"Kheta","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F70"],"depth":4,"children":[],"spouses":[],"parents":["I114"]},"I119":{"id":"I119","name":"Vira","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F113"],"famc":["F70"],"depth":4,"children":["I198"],"spouses":[],"parents":["I114"]},"I120":{"id":"I120","name":"Jemal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F72"],"famc":["F71"],"depth":5,"children":["I123","I121","I122"],"spouses":[],"parents":["I117"]},"I121":{"id":"I121","name":"Devsi","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F73"],"famc":["F72"],"depth":6,"children":["I128","I127"],"spouses":[],"parents":["I120"]},"I122":{"id":"I122","name":"Vrajlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F76","F77"],"famc":["F72"],"depth":6,"children":["I137","I136"],"spouses":[],"parents":["I120"]},"I123":{"id":"I123","name":"Chunilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F83","F84"],"famc":["F72"],"depth":6,"children":["I145","I146","I148","I147"],"spouses":[],"parents":["I120"]},"I124":{"id":"I124","name":"Parshottam","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F89"],"famc":["F71"],"depth":5,"children":["I156","I157","I155"],"spouses":[],"parents":["I117"]},"I125":{"id":"I125","name":"Lakhmichand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F103"],"famc":["F71"],"depth":5,"children":["I181"],"spouses":[],"parents":["I117"]},"I126":{"id":"I126","name":"Daya","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F105"],"famc":["F71"],"depth":5,"children":["I183"],"spouses":[],"parents":["I117"]},"I127":{"id":"I127","name":"Mafatlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F74"],"famc":["F73"],"depth":7,"children":["I129"],"spouses":[],"parents":["I121"]},"I128":{"id":"I128","name":"Ratilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F75"],"famc":["F73"],"depth":7,"children":["I131","I130","I132","I134","I133","I135"],"spouses":[],"parents":["I121"]},"I129":{"id":"I129","name":"Jitendra","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"189","fams":["F136"],"famc":["F74"],"depth":8,"children":["I237","I236"],"spouses":[],"parents":["I127"]},"I130":{"id":"I130","name":"Shantilal","sex":"M","deceased":true,"birth":"","death":"","city":"Sion W","note":"","nick":"195","fams":[],"famc":["F75"],"depth":8,"children":[],"spouses":[],"parents":["I128"]},"I131":{"id":"I131","name":"Surendra","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"190","fams":[],"famc":["F75"],"depth":8,"children":[],"spouses":[],"parents":["I128"]},"I132":{"id":"I132","name":"Harshad","sex":"M","deceased":false,"birth":"","death":"","city":"Delhi","note":"","nick":"191","fams":[],"famc":["F75"],"depth":8,"children":[],"spouses":[],"parents":["I128"]},"I133":{"id":"I133","name":"Harish","sex":"M","deceased":false,"birth":"","death":"","city":"Delhi","note":"","nick":"192","fams":[],"famc":["F75"],"depth":8,"children":[],"spouses":[],"parents":["I128"]},"I134":{"id":"I134","name":"Dilip","sex":"M","deceased":false,"birth":"","death":"","city":"Delhi","note":"","nick":"193","fams":[],"famc":["F75"],"depth":8,"children":[],"spouses":[],"parents":["I128"]},"I135":{"id":"I135","name":"Rajendra","sex":"M","deceased":false,"birth":"","death":"","city":"Delhi","note":"","nick":"194","fams":[],"famc":["F75"],"depth":8,"children":[],"spouses":[],"parents":["I128"]},"I136":{"id":"I136","name":"Chandulal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"196","fams":["F79","F80"],"famc":["F76"],"depth":7,"children":["I139","I140","I141"],"spouses":[],"parents":["I122"]},"I137":{"id":"I137","name":"Kantilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F78"],"famc":["F77"],"depth":7,"children":["I138"],"spouses":[],"parents":["I122"]},"I138":{"id":"I138","name":"Jayantkumar","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"199","fams":[],"famc":["F78"],"depth":8,"children":[],"spouses":[],"parents":["I137"]},"I139":{"id":"I139","name":"Virendra","sex":"M","deceased":false,"birth":"","death":"","city":"Bangalore","note":"","nick":"197","fams":["F81"],"famc":["F79"],"depth":8,"children":["I142","I144"],"spouses":[],"parents":["I136"]},"I140":{"id":"I140","name":"Anil","sex":"M","deceased":false,"birth":"","death":"","city":"Goregaon","note":"","nick":"198","fams":["F82"],"famc":["F80"],"depth":8,"children":["I143"],"spouses":[],"parents":["I136"]},"I141":{"id":"I141","name":"Hemendra","sex":"M","deceased":false,"birth":"","death":"","city":"Nala Sopara","note":"","nick":"196","fams":[],"famc":["F79"],"depth":8,"children":[],"spouses":[],"parents":["I136"]},"I142":{"id":"I142","name":"Bhaven","sex":"M","deceased":false,"birth":"","death":"","city":"Bangalore","note":"","nick":"197","fams":["F141"],"famc":["F81"],"depth":9,"children":["I243"],"spouses":[],"parents":["I139"]},"I143":{"id":"I143","name":"Parag","sex":"M","deceased":false,"birth":"","death":"","city":"Goregaon","note":"","nick":"198","fams":[],"famc":["F82"],"depth":9,"children":[],"spouses":[],"parents":["I140"]},"I144":{"id":"I144","name":"Gaurang","sex":"M","deceased":false,"birth":"","death":"","city":"Bangalore","note":"","nick":"197","fams":[],"famc":["F81"],"depth":9,"children":[],"spouses":[],"parents":["I139"]},"I145":{"id":"I145","name":"Chimanlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"200","fams":["F85"],"famc":["F83"],"depth":7,"children":["I150","I149"],"spouses":[],"parents":["I123"]},"I146":{"id":"I146","name":"Bachulal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F83"],"depth":7,"children":[],"spouses":[],"parents":["I123"]},"I147":{"id":"I147","name":"Babulal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"201","fams":["F88"],"famc":["F84"],"depth":7,"children":["I154","I153"],"spouses":[],"parents":["I123"]},"I148":{"id":"I148","name":"Hashmukh","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"204","fams":[],"famc":["F83"],"depth":7,"children":[],"spouses":[],"parents":["I123"]},"I149":{"id":"I149","name":"Suresh","sex":"M","deceased":false,"birth":"","death":"","city":"Khar","note":"","nick":"200","fams":["F86"],"famc":["F85"],"depth":8,"children":["I151"],"spouses":[],"parents":["I145"]},"I150":{"id":"I150","name":"Deepak","sex":"M","deceased":false,"birth":"","death":"","city":"Khar","note":"","nick":"200","fams":["F87"],"famc":["F85"],"depth":8,"children":["I152"],"spouses":[],"parents":["I145"]},"I151":{"id":"I151","name":"Parin","sex":"M","deceased":false,"birth":"","death":"","city":"Khar","note":"","nick":"200","fams":[],"famc":["F86"],"depth":9,"children":[],"spouses":[],"parents":["I149"]},"I152":{"id":"I152","name":"Chirag","sex":"M","deceased":false,"birth":"","death":"","city":"Khar","note":"","nick":"200","fams":[],"famc":["F87"],"depth":9,"children":[],"spouses":[],"parents":["I150"]},"I153":{"id":"I153","name":"Amol","sex":"M","deceased":false,"birth":"","death":"","city":"Rajkot","note":"","nick":"202","fams":[],"famc":["F88"],"depth":8,"children":[],"spouses":[],"parents":["I147"]},"I154":{"id":"I154","name":"Prakash","sex":"M","deceased":false,"birth":"","death":"","city":"Rajkot","note":"","nick":"203","fams":["F135"],"famc":["F88"],"depth":8,"children":["I235","I234"],"spouses":[],"parents":["I147"]},"I155":{"id":"I155","name":"Maganlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F90","F91"],"famc":["F89"],"depth":6,"children":["I159","I158"],"spouses":[],"parents":["I124"]},"I156":{"id":"I156","name":"Lallubhai","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F95"],"famc":["F89"],"depth":6,"children":["I167","I165","I168","I166"],"spouses":[],"parents":["I124"]},"I157":{"id":"I157","name":"Keshavlal","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F89"],"depth":6,"children":[],"spouses":[],"parents":["I124"]},"I158":{"id":"I158","name":"Himatlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"205","fams":["F92"],"famc":["F90"],"depth":7,"children":["I160","I162","I163"],"spouses":[],"parents":["I155"]},"I159":{"id":"I159","name":"Babulal","sex":"M","deceased":true,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"208","fams":[],"famc":["F91"],"depth":7,"children":[],"spouses":[],"parents":["I155"]},"I160":{"id":"I160","name":"Navnit","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"206","fams":["F93"],"famc":["F92"],"depth":8,"children":["I161"],"spouses":[],"parents":["I158"]},"I161":{"id":"I161","name":"Niresh","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"206","fams":[],"famc":["F93"],"depth":9,"children":[],"spouses":[],"parents":["I160"]},"I162":{"id":"I162","name":"Suresh","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"207","fams":["F94"],"famc":["F92"],"depth":8,"children":["I164"],"spouses":[],"parents":["I158"]},"I163":{"id":"I163","name":"Hemendra","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"205","fams":[],"famc":["F92"],"depth":8,"children":[],"spouses":[],"parents":["I158"]},"I164":{"id":"I164","name":"Darshan","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"207","fams":["F148"],"famc":["F94"],"depth":9,"children":["I253"],"spouses":[],"parents":["I162"]},"I165":{"id":"I165","name":"Natvarlal","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"209","fams":["F96"],"famc":["F95"],"depth":7,"children":["I169","I170","I171"],"spouses":[],"parents":["I156"]},"I166":{"id":"I166","name":"Chandulal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"211","fams":["F98"],"famc":["F95"],"depth":7,"children":["I173"],"spouses":[],"parents":["I156"]},"I167":{"id":"I167","name":"Rasiklal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"212","fams":["F99"],"famc":["F95"],"depth":7,"children":["I175","I174"],"spouses":[],"parents":["I156"]},"I168":{"id":"I168","name":"Gunvant","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"213","fams":["F101"],"famc":["F95"],"depth":7,"children":["I178","I177","I179"],"spouses":[],"parents":["I156"]},"I169":{"id":"I169","name":"Hemant","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"209","fams":[],"famc":["F96"],"depth":8,"children":[],"spouses":[],"parents":["I165"]},"I170":{"id":"I170","name":"Dipak","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"210","fams":[],"famc":["F96"],"depth":8,"children":[],"spouses":[],"parents":["I165"]},"I171":{"id":"I171","name":"Kirti","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"210","fams":["F97"],"famc":["F96"],"depth":8,"children":["I244","I172"],"spouses":[],"parents":["I165"]},"I172":{"id":"I172","name":"Rujul","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"210","fams":[],"famc":["F97"],"depth":9,"children":[],"spouses":[],"parents":["I171"]},"I173":{"id":"I173","name":"Bharat","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"211","fams":[],"famc":["F98"],"depth":8,"children":[],"spouses":[],"parents":["I166"]},"I174":{"id":"I174","name":"Atul","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"212","fams":[],"famc":["F99"],"depth":8,"children":[],"spouses":[],"parents":["I167"]},"I175":{"id":"I175","name":"Bhadresh","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"212","fams":["F100"],"famc":["F99"],"depth":8,"children":["I176"],"spouses":[],"parents":["I167"]},"I176":{"id":"I176","name":"Kuldeep","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"212","fams":[],"famc":["F100"],"depth":9,"children":[],"spouses":[],"parents":["I175"]},"I177":{"id":"I177","name":"Nitin","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"213","fams":["F102"],"famc":["F101"],"depth":8,"children":["I180","I245"],"spouses":[],"parents":["I168"]},"I178":{"id":"I178","name":"Girish","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"213","fams":[],"famc":["F101"],"depth":8,"children":[],"spouses":[],"parents":["I168"]},"I179":{"id":"I179","name":"Kamlesh","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"213","fams":[],"famc":["F101"],"depth":8,"children":[],"spouses":[],"parents":["I168"]},"I180":{"id":"I180","name":"Aakash","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"213","fams":[],"famc":["F102"],"depth":9,"children":[],"spouses":[],"parents":["I177"]},"I181":{"id":"I181","name":"Raichand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F104"],"famc":["F103"],"depth":6,"children":["I193","I182","I184"],"spouses":[],"parents":["I125"]},"I182":{"id":"I182","name":"Sakarchand","sex":"M","deceased":true,"birth":"","death":"","city":"Kadi","note":"","nick":"214","fams":[],"famc":["F104"],"depth":7,"children":[],"spouses":[],"parents":["I181"]},"I183":{"id":"I183","name":"Lalchand","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F105"],"depth":6,"children":[],"spouses":[],"parents":["I126"]},"I184":{"id":"I184","name":"Manilal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"215","fams":["F106","F107"],"famc":["F104"],"depth":7,"children":["I187","I185","I186"],"spouses":[],"parents":["I181"]},"I185":{"id":"I185","name":"Jasvant","sex":"M","deceased":false,"birth":"","death":"","city":"Himatnagar","note":"","nick":"215","fams":["F108"],"famc":["F106"],"depth":8,"children":["I188","I189"],"spouses":[],"parents":["I184"]},"I186":{"id":"I186","name":"Bharat","sex":"M","deceased":false,"birth":"","death":"","city":"Himatnagar","note":"","nick":"215","fams":["F109"],"famc":["F106"],"depth":8,"children":["I191","I190"],"spouses":[],"parents":["I184"]},"I187":{"id":"I187","name":"Vijay","sex":"M","deceased":false,"birth":"","death":"","city":"Borivalli W","note":"","nick":"216","fams":["F110"],"famc":["F107"],"depth":8,"children":["I192"],"spouses":[],"parents":["I184"]},"I188":{"id":"I188","name":"Maulik","sex":"M","deceased":false,"birth":"","death":"","city":"Himatnagar","note":"","nick":"215","fams":[],"famc":["F108"],"depth":9,"children":[],"spouses":[],"parents":["I185"]},"I189":{"id":"I189","name":"Chintan","sex":"M","deceased":false,"birth":"","death":"","city":"Himatnagar","note":"","nick":"215","fams":[],"famc":["F108"],"depth":9,"children":[],"spouses":[],"parents":["I185"]},"I190":{"id":"I190","name":"Jaymin","sex":"M","deceased":false,"birth":"","death":"","city":"Himatnagar","note":"","nick":"215","fams":[],"famc":["F109"],"depth":9,"children":[],"spouses":[],"parents":["I186"]},"I191":{"id":"I191","name":"Aalkash","sex":"M","deceased":false,"birth":"","death":"","city":"Himatnagar","note":"","nick":"215","fams":[],"famc":["F109"],"depth":9,"children":[],"spouses":[],"parents":["I186"]},"I192":{"id":"I192","name":"Harshad","sex":"M","deceased":false,"birth":"","death":"","city":"Borivalli W","note":"","nick":"216","fams":[],"famc":["F110"],"depth":9,"children":[],"spouses":[],"parents":["I187"]},"I193":{"id":"I193","name":"Natvarlal","sex":"M","deceased":false,"birth":"","death":"","city":"Sabarkantha","note":"","nick":"217","fams":["F111"],"famc":["F104"],"depth":7,"children":["I194","I195"],"spouses":[],"parents":["I181"]},"I194":{"id":"I194","name":"Sanjay","sex":"M","deceased":false,"birth":"","death":"","city":"Sabarkantha","note":"","nick":"217","fams":["F112"],"famc":["F111"],"depth":8,"children":["I197","I196"],"spouses":[],"parents":["I193"]},"I195":{"id":"I195","name":"Ajay","sex":"M","deceased":false,"birth":"","death":"","city":"Sabarkantha","note":"","nick":"217","fams":[],"famc":["F111"],"depth":8,"children":[],"spouses":[],"parents":["I193"]},"I196":{"id":"I196","name":"Jay","sex":"M","deceased":false,"birth":"","death":"","city":"Sabarkantha","note":"","nick":"217","fams":[],"famc":["F112"],"depth":9,"children":[],"spouses":[],"parents":["I194"]},"I197":{"id":"I197","name":"Jitendra","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"217","fams":[],"famc":["F112"],"depth":9,"children":[],"spouses":[],"parents":["I194"]},"I198":{"id":"I198","name":"Ujamshi","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F114"],"famc":["F113"],"depth":5,"children":["I199","I200"],"spouses":[],"parents":["I119"]},"I199":{"id":"I199","name":"Shantilal","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"218","fams":[],"famc":["F114"],"depth":6,"children":[],"spouses":[],"parents":["I198"]},"I200":{"id":"I200","name":"Ratilal","sex":"Other","deceased":true,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"218","fams":[],"famc":["F114"],"depth":6,"children":[],"spouses":[],"parents":["I198"]},"I201":{"id":"I201","name":"Chaku","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F116"],"famc":["F115"],"depth":4,"children":["I202","I204","I203"],"spouses":[],"parents":["I115"]},"I202":{"id":"I202","name":"Virpal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F117"],"famc":["F116"],"depth":5,"children":["I205"],"spouses":[],"parents":["I201"]},"I203":{"id":"I203","name":"Motichand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F118"],"famc":["F116"],"depth":5,"children":["I206"],"spouses":[],"parents":["I201"]},"I204":{"id":"I204","name":"Mulchand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F119"],"famc":["F116"],"depth":5,"children":["I207"],"spouses":[],"parents":["I201"]},"I205":{"id":"I205","name":"Trikam","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F117"],"depth":6,"children":[],"spouses":[],"parents":["I202"]},"I206":{"id":"I206","name":"Chhagan","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F118"],"depth":6,"children":[],"spouses":[],"parents":["I203"]},"I207":{"id":"I207","name":"Devsi","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F119"],"depth":6,"children":[],"spouses":[],"parents":["I204"]},"I208":{"id":"I208","name":"Jivan","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F121"],"famc":["F120"],"depth":4,"children":["I209"],"spouses":[],"parents":["I116"]},"I209":{"id":"I209","name":"Melo","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F122"],"famc":["F121"],"depth":5,"children":["I210"],"spouses":[],"parents":["I208"]},"I210":{"id":"I210","name":"Nathu","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F123"],"famc":["F122"],"depth":6,"children":["I211"],"spouses":[],"parents":["I209"]},"I211":{"id":"I211","name":"Vardhman","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F123"],"depth":7,"children":[],"spouses":[],"parents":["I210"]},"I212":{"id":"I212","name":"Jethalal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F124"],"famc":["F120"],"depth":4,"children":["I214","I213"],"spouses":[],"parents":["I116"]},"I213":{"id":"I213","name":"Motichand","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F124"],"depth":5,"children":[],"spouses":[],"parents":["I212"]},"I214":{"id":"I214","name":"Fulchand","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F125","F126"],"famc":["F124"],"depth":5,"children":["I215","I217","I216","I218"],"spouses":[],"parents":["I212"]},"I215":{"id":"I215","name":"Shivlal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":["F127"],"famc":["F125"],"depth":6,"children":["I219"],"spouses":[],"parents":["I214"]},"I216":{"id":"I216","name":"Chhotalal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F126"],"depth":6,"children":[],"spouses":[],"parents":["I214"]},"I217":{"id":"I217","name":"Tokar","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"","fams":[],"famc":["F126"],"depth":6,"children":[],"spouses":[],"parents":["I214"]},"I218":{"id":"I218","name":"Mohan","sex":"Other","deceased":true,"birth":"","death":"","city":"","note":"","nick":"224","fams":[],"famc":["F126"],"depth":6,"children":[],"spouses":[],"parents":["I214"]},"I219":{"id":"I219","name":"Hiralal","sex":"M","deceased":true,"birth":"","death":"","city":"","note":"","nick":"219","fams":["F128"],"famc":["F127"],"depth":7,"children":["I224","I223","I225","I221","I220","I222"],"spouses":[],"parents":["I215"]},"I220":{"id":"I220","name":"Kamlesh","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"219","fams":["F129"],"famc":["F128"],"depth":8,"children":["I227","I226"],"spouses":[],"parents":["I219"]},"I221":{"id":"I221","name":"Bharat","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"220","fams":["F130"],"famc":["F128"],"depth":8,"children":["I228"],"spouses":[],"parents":["I219"]},"I222":{"id":"I222","name":"Dilip","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"221","fams":["F131"],"famc":["F128"],"depth":8,"children":["I229"],"spouses":[],"parents":["I219"]},"I223":{"id":"I223","name":"Dhirendra","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"222","fams":[],"famc":["F128"],"depth":8,"children":[],"spouses":[],"parents":["I219"]},"I224":{"id":"I224","name":"Kalpesh","sex":"M","deceased":false,"birth":"","death":"","city":"USA","note":"","nick":"224","fams":["F132"],"famc":["F128"],"depth":8,"children":["I230"],"spouses":[],"parents":["I219"]},"I225":{"id":"I225","name":"Sanjay","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"223","fams":["F146"],"famc":["F128"],"depth":8,"children":["I251"],"spouses":[],"parents":["I219"]},"I226":{"id":"I226","name":"Amit","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"219","fams":["F142"],"famc":["F129"],"depth":9,"children":["I246"],"spouses":[],"parents":["I220"]},"I227":{"id":"I227","name":"Pranav","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"219","fams":["F143"],"famc":["F129"],"depth":9,"children":["I247"],"spouses":[],"parents":["I220"]},"I228":{"id":"I228","name":"Krunal","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"220","fams":["F147"],"famc":["F130"],"depth":9,"children":["I252"],"spouses":[],"parents":["I221"]},"I229":{"id":"I229","name":"Aakash","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"221","fams":[],"famc":["F131"],"depth":9,"children":[],"spouses":[],"parents":["I222"]},"I230":{"id":"I230","name":"Rushabh","sex":"M","deceased":false,"birth":"","death":"","city":"USA","note":"","nick":"224","fams":[],"famc":["F132"],"depth":9,"children":[],"spouses":[],"parents":["I224"]},"I231":{"id":"I231","name":"Pranav","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"187","fams":[],"famc":["F133"],"depth":10,"children":[],"spouses":[],"parents":["I1"]},"I232":{"id":"I232","name":"Aditya","sex":"M","deceased":false,"birth":"","death":"","city":"","note":"","nick":"187","fams":[],"famc":["F133"],"depth":10,"children":[],"spouses":[],"parents":["I1"]},"I233":{"id":"I233","name":"Sagar","sex":"M","deceased":false,"birth":"","death":"","city":"Mumbai","note":"","nick":"182","fams":[],"famc":["F134"],"depth":10,"children":[],"spouses":[],"parents":["I31"]},"I234":{"id":"I234","name":"Mohit","sex":"M","deceased":false,"birth":"","death":"","city":"Rajkot","note":"","nick":"203","fams":[],"famc":["F135"],"depth":9,"children":[],"spouses":[],"parents":["I154"]},"I235":{"id":"I235","name":"Premal","sex":"M","deceased":false,"birth":"","death":"","city":"Rajkot","note":"","nick":"203","fams":[],"famc":["F135"],"depth":9,"children":[],"spouses":[],"parents":["I154"]},"I236":{"id":"I236","name":"Tejas","sex":"M","deceased":false,"birth":"","death":"","city":"Surendranagar","note":"","nick":"189","fams":[],"famc":["F136"],"depth":9,"children":[],"spouses":[],"parents":["I129"]},"I237":{"id":"I237","name":"Nirav","sex":"M","deceased":false,"birth":"","death":"","city":"Surendranagar","note":"","nick":"189","fams":[],"famc":["F136"],"depth":9,"children":[],"spouses":[],"parents":["I129"]},"I238":{"id":"I238","name":"Dimple","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"158","fams":[],"famc":["F137"],"depth":9,"children":[],"spouses":[],"parents":["I53"]},"I239":{"id":"I239","name":"Jit","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"158","fams":[],"famc":["F137"],"depth":9,"children":[],"spouses":[],"parents":["I53"]},"I240":{"id":"I240","name":"Mahir","sex":"M","deceased":false,"birth":"","death":"","city":"Malad W","note":"","nick":"159","fams":[],"famc":["F138"],"depth":11,"children":[],"spouses":[],"parents":["I60"]},"I241":{"id":"I241","name":"Kunjal","sex":"M","deceased":false,"birth":"","death":"","city":"Santacruz","note":"","nick":"162","fams":[],"famc":["F139"],"depth":11,"children":[],"spouses":[],"parents":["I112"]},"I242":{"id":"I242","name":"Krishna","sex":"M","deceased":false,"birth":"","death":"","city":"Pedar road","note":"","nick":"172","fams":[],"famc":["F140"],"depth":11,"children":[],"spouses":[],"parents":["I101"]},"I243":{"id":"I243","name":"Tarang","sex":"M","deceased":false,"birth":"","death":"","city":"Bangalore","note":"","nick":"197","fams":[],"famc":["F141"],"depth":10,"children":[],"spouses":[],"parents":["I142"]},"I244":{"id":"I244","name":"Devesh","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"210","fams":[],"famc":["F97"],"depth":9,"children":[],"spouses":[],"parents":["I171"]},"I245":{"id":"I245","name":"AAnal","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"213","fams":[],"famc":["F102"],"depth":9,"children":[],"spouses":[],"parents":["I177"]},"I246":{"id":"I246","name":"Nikunl","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"219","fams":[],"famc":["F142"],"depth":10,"children":[],"spouses":[],"parents":["I226"]},"I247":{"id":"I247","name":"Punjan","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"219","fams":[],"famc":["F143"],"depth":10,"children":[],"spouses":[],"parents":["I227"]},"I248":{"id":"I248","name":"Dev","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali","note":"","nick":"165","fams":[],"famc":["F144"],"depth":11,"children":[],"spouses":[],"parents":["I83"]},"I249":{"id":"I249","name":"Jianam","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali","note":"","nick":"167","fams":[],"famc":["F145"],"depth":11,"children":[],"spouses":[],"parents":["I92"]},"I250":{"id":"I250","name":"Jainil","sex":"M","deceased":false,"birth":"","death":"","city":"Kandivali","note":"","nick":"167","fams":[],"famc":["F145"],"depth":11,"children":[],"spouses":[],"parents":["I92"]},"I251":{"id":"I251","name":"Hemant","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"223","fams":[],"famc":["F146"],"depth":9,"children":[],"spouses":[],"parents":["I225"]},"I252":{"id":"I252","name":"Kannan","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"220","fams":[],"famc":["F147"],"depth":10,"children":[],"spouses":[],"parents":["I228"]},"I253":{"id":"I253","name":"Arham","sex":"M","deceased":false,"birth":"","death":"","city":"Ahmedabad","note":"","nick":"207","fams":[],"famc":["F148"],"depth":10,"children":[],"spouses":[],"parents":["I164"]}},"families":{"F1":{"id":"F1","husb":"I2","wife":null,"children":["I1"]},"F2":{"id":"F2","husb":"I3","wife":null,"children":["I2"]},"F3":{"id":"F3","husb":"I12","wife":null,"children":["I3","I13"]},"F4":{"id":"F4","husb":"I3","wife":null,"children":["I4","I5"]},"F5":{"id":"F5","husb":"I4","wife":null,"children":["I6","I7"]},"F6":{"id":"F6","husb":"I5","wife":null,"children":["I8","I9","I10"]},"F7":{"id":"F7","husb":"I7","wife":null,"children":["I11"]},"F15":{"id":"F15","husb":"I13","wife":null,"children":["I20","I21","I22","I28"]},"F16":{"id":"F16","husb":"I20","wife":null,"children":["I23","I24"]},"F17":{"id":"F17","husb":"I24","wife":null,"children":["I25"]},"F18":{"id":"F18","husb":"I23","wife":null,"children":["I26"]},"F19":{"id":"F19","husb":"I26","wife":null,"children":["I27"]},"F20":{"id":"F20","husb":"I22","wife":null,"children":["I29","I30","I31","I32","I33","I34"]},"F21":{"id":"F21","husb":"I28","wife":null,"children":["I35"]},"F22":{"id":"F22","husb":"I35","wife":null,"children":["I36","I37"]},"F23":{"id":"F23","husb":"I29","wife":null,"children":["I38","I39"]},"F24":{"id":"F24","husb":"I32","wife":null,"children":["I40"]},"F25":{"id":"F25","husb":"I18","wife":null,"children":["I41"]},"F26":{"id":"F26","husb":"I17","wife":null,"children":["I42","I43"]},"F27":{"id":"F27","husb":"I42","wife":null,"children":["I44"]},"F28":{"id":"F28","husb":"I44","wife":null,"children":["I45","I46"]},"F29":{"id":"F29","husb":"I46","wife":null,"children":["I47","I48","I49","I50"]},"F30":{"id":"F30","husb":"I48","wife":null,"children":["I51","I52"]},"F31":{"id":"F31","husb":"I51","wife":null,"children":["I53"]},"F32":{"id":"F32","husb":"I16","wife":null,"children":["I54"]},"F33":{"id":"F33","husb":"I54","wife":null,"children":["I55"]},"F34":{"id":"F34","husb":"I55","wife":null,"children":["I56"]},"F35":{"id":"F35","husb":"I56","wife":null,"children":["I57"]},"F36":{"id":"F36","husb":"I57","wife":null,"children":["I58"]},"F37":{"id":"F37","husb":"I58","wife":null,"children":["I59","I61","I62"]},"F38":{"id":"F38","husb":"I59","wife":null,"children":["I60"]},"F40":{"id":"F40","husb":"I62","wife":null,"children":["I64"]},"F41":{"id":"F41","husb":"I15","wife":null,"children":["I65","I66"]},"F42":{"id":"F42","husb":"I65","wife":null,"children":["I67"]},"F43":{"id":"F43","husb":"I67","wife":null,"children":["I68"]},"F44":{"id":"F44","husb":"I66","wife":null,"children":["I69","I70","I71","I72"]},"F45":{"id":"F45","husb":null,"wife":"I69","children":["I73","I74"]},"F46":{"id":"F46","husb":null,"wife":"I70","children":["I75"]},"F47":{"id":"F47","husb":"I72","wife":null,"children":["I76","I77"]},"F48":{"id":"F48","husb":"I76","wife":null,"children":["I78","I79","I80","I81"]},"F49":{"id":"F49","husb":"I78","wife":null,"children":["I82","I84","I85"]},"F50":{"id":"F50","husb":"I82","wife":null,"children":["I83"]},"F51":{"id":"F51","husb":"I84","wife":null,"children":["I86"]},"F52":{"id":"F52","husb":"I79","wife":null,"children":["I87","I88","I89","I90"]},"F53":{"id":"F53","husb":"I87","wife":null,"children":["I91","I92"]},"F54":{"id":"F54","husb":"I88","wife":null,"children":["I93","I94"]},"F56":{"id":"F56","husb":"I80","wife":null,"children":["I96","I97"]},"F57":{"id":"F57","husb":"I97","wife":null,"children":["I98"]},"F58":{"id":"F58","husb":"I95","wife":null,"children":["I99"]},"F59":{"id":"F59","husb":"I81","wife":null,"children":["I100"]},"F60":{"id":"F60","husb":"I100","wife":null,"children":["I101"]},"F61":{"id":"F61","husb":"I77","wife":null,"children":["I102","I103"]},"F62":{"id":"F62","husb":"I103","wife":null,"children":["I104","I105"]},"F63":{"id":"F63","husb":"I14","wife":null,"children":["I106","I107"]},"F64":{"id":"F64","husb":"I105","wife":null,"children":["I108","I109"]},"F65":{"id":"F65","husb":"I68","wife":null,"children":["I110"]},"F66":{"id":"F66","husb":"I110","wife":null,"children":["I111"]},"F67":{"id":"F67","husb":"I111","wife":null,"children":["I112"]},"F68":{"id":"F68","husb":"I102","wife":null,"children":["I113"]},"F69":{"id":"F69","husb":"I41","wife":null,"children":["I114","I115","I116"]},"F70":{"id":"F70","husb":"I114","wife":null,"children":["I117","I118","I119"]},"F71":{"id":"F71","husb":"I117","wife":null,"children":["I120","I124","I125","I126"]},"F72":{"id":"F72","husb":"I120","wife":null,"children":["I121","I122","I123"]},"F73":{"id":"F73","husb":"I121","wife":null,"children":["I127","I128"]},"F74":{"id":"F74","husb":"I127","wife":null,"children":["I129"]},"F75":{"id":"F75","husb":"I128","wife":null,"children":["I130","I131","I132","I133","I134","I135"]},"F76":{"id":"F76","husb":"I122","wife":null,"children":["I136"]},"F78":{"id":"F78","husb":"I137","wife":null,"children":["I138"]},"F79":{"id":"F79","husb":"I136","wife":null,"children":["I139","I141"]},"F81":{"id":"F81","husb":"I139","wife":null,"children":["I142","I144"]},"F83":{"id":"F83","husb":"I123","wife":null,"children":["I145","I146","I148"]},"F85":{"id":"F85","husb":"I145","wife":null,"children":["I149","I150"]},"F86":{"id":"F86","husb":"I149","wife":null,"children":["I151"]},"F87":{"id":"F87","husb":"I150","wife":null,"children":["I152"]},"F88":{"id":"F88","husb":"I147","wife":null,"children":["I153","I154"]},"F89":{"id":"F89","husb":"I124","wife":null,"children":["I155","I156","I157"]},"F90":{"id":"F90","husb":"I155","wife":null,"children":["I158"]},"F92":{"id":"F92","husb":"I158","wife":null,"children":["I160","I162","I163"]},"F93":{"id":"F93","husb":"I160","wife":null,"children":["I161"]},"F94":{"id":"F94","husb":"I162","wife":null,"children":["I164"]},"F95":{"id":"F95","husb":"I156","wife":null,"children":["I165","I166","I167","I168"]},"F96":{"id":"F96","husb":"I165","wife":null,"children":["I169","I170","I171"]},"F97":{"id":"F97","husb":"I171","wife":null,"children":["I172","I244"]},"F98":{"id":"F98","husb":"I166","wife":null,"children":["I173"]},"F99":{"id":"F99","husb":"I167","wife":null,"children":["I174","I175"]},"F100":{"id":"F100","husb":"I175","wife":null,"children":["I176"]},"F101":{"id":"F101","husb":"I168","wife":null,"children":["I177","I178","I179"]},"F102":{"id":"F102","husb":"I177","wife":null,"children":["I180","I245"]},"F103":{"id":"F103","husb":"I125","wife":null,"children":["I181"]},"F104":{"id":"F104","husb":"I181","wife":null,"children":["I182","I184","I193"]},"F105":{"id":"F105","husb":"I126","wife":null,"children":["I183"]},"F106":{"id":"F106","husb":"I184","wife":null,"children":["I185","I186"]},"F108":{"id":"F108","husb":"I185","wife":null,"children":["I188","I189"]},"F109":{"id":"F109","husb":"I186","wife":null,"children":["I190","I191"]},"F110":{"id":"F110","husb":"I187","wife":null,"children":["I192"]},"F111":{"id":"F111","husb":"I193","wife":null,"children":["I194","I195"]},"F112":{"id":"F112","husb":"I194","wife":null,"children":["I196","I197"]},"F113":{"id":"F113","husb":"I119","wife":null,"children":["I198"]},"F114":{"id":"F114","husb":"I198","wife":null,"children":["I199","I200"]},"F115":{"id":"F115","husb":"I115","wife":null,"children":["I201"]},"F116":{"id":"F116","husb":"I201","wife":null,"children":["I202","I203","I204"]},"F117":{"id":"F117","husb":"I202","wife":null,"children":["I205"]},"F118":{"id":"F118","husb":"I203","wife":null,"children":["I206"]},"F119":{"id":"F119","husb":"I204","wife":null,"children":["I207"]},"F120":{"id":"F120","husb":"I116","wife":null,"children":["I208","I212"]},"F121":{"id":"F121","husb":"I208","wife":null,"children":["I209"]},"F123":{"id":"F123","husb":"I210","wife":null,"children":["I211"]},"F124":{"id":"F124","husb":"I212","wife":null,"children":["I213","I214"]},"F126":{"id":"F126","husb":"I214","wife":null,"children":["I216","I217","I218"]},"F127":{"id":"F127","husb":"I215","wife":null,"children":["I219"]},"F128":{"id":"F128","husb":"I219","wife":null,"children":["I220","I221","I222","I223","I224","I225"]},"F129":{"id":"F129","husb":"I220","wife":null,"children":["I226","I227"]},"F130":{"id":"F130","husb":"I221","wife":null,"children":["I228"]},"F131":{"id":"F131","husb":"I222","wife":null,"children":["I229"]},"F132":{"id":"F132","husb":"I224","wife":null,"children":["I230"]},"F133":{"id":"F133","husb":"I1","wife":null,"children":["I231","I232"]},"F134":{"id":"F134","husb":"I31","wife":null,"children":["I233"]},"F135":{"id":"F135","husb":"I154","wife":null,"children":["I234","I235"]},"F136":{"id":"F136","husb":"I129","wife":null,"children":["I236","I237"]},"F137":{"id":"F137","husb":"I53","wife":null,"children":["I238","I239"]},"F138":{"id":"F138","husb":"I60","wife":null,"children":["I240"]},"F139":{"id":"F139","husb":"I112","wife":null,"children":["I241"]},"F140":{"id":"F140","husb":"I101","wife":null,"children":["I242"]},"F141":{"id":"F141","husb":"I142","wife":null,"children":["I243"]},"F142":{"id":"F142","husb":"I226","wife":null,"children":["I246"]},"F143":{"id":"F143","husb":"I227","wife":null,"children":["I247"]},"F144":{"id":"F144","husb":"I83","wife":null,"children":["I248"]},"F145":{"id":"F145","husb":"I92","wife":null,"children":["I249","I250"]},"F146":{"id":"F146","husb":"I225","wife":null,"children":["I251"]},"F147":{"id":"F147","husb":"I228","wife":null,"children":["I252"]},"F148":{"id":"F148","husb":"I164","wife":null,"children":["I253"]},"F8":{"id":"F8","husb":"I14","wife":null,"children":["I12"]},"F9":{"id":"F9","husb":"I15","wife":null,"children":["I14"]},"F10":{"id":"F10","husb":"I16","wife":null,"children":["I15"]},"F11":{"id":"F11","husb":"I17","wife":null,"children":["I16"]},"F12":{"id":"F12","husb":"I18","wife":null,"children":["I17"]},"F13":{"id":"F13","husb":"I19","wife":null,"children":["I18"]},"F14":{"id":"F14","husb":null,"wife":null,"children":["I19"]},"F39":{"id":"F39","husb":"I61","wife":null,"children":["I63"]},"F55":{"id":"F55","husb":"I80","wife":null,"children":["I95"]},"F77":{"id":"F77","husb":"I122","wife":null,"children":["I137"]},"F80":{"id":"F80","husb":"I136","wife":null,"children":["I140"]},"F82":{"id":"F82","husb":"I140","wife":null,"children":["I143"]},"F84":{"id":"F84","husb":"I123","wife":null,"children":["I147"]},"F91":{"id":"F91","husb":"I155","wife":null,"children":["I159"]},"F107":{"id":"F107","husb":"I184","wife":null,"children":["I187"]},"F122":{"id":"F122","husb":"I209","wife":null,"children":["I210"]},"F125":{"id":"F125","husb":"I214","wife":null,"children":["I215"]}}};
 
 const P=FD.individuals, FM=FD.families;
-const ADMIN_PIN='1234';
+const PIN='1234';
 let isAdmin=false, ori='v', activeRoot=null, collapsed=new Set(), curId=null;
-let filter='all'; // 'all' or 'live'
-let descFilter=null; // null = show all, id = show only descendants of this id
-let panX=60, panY=50, scale=1;
-let panning=false, lastX=0, lastY=0, pinchD=null;
-const NW=112, NH=54, HG=22, VG=78;
+let filter='all', descRoot=null;
+const NW=110, NH=54, HG=22, VG=78;
+
+// Pan/zoom state
+let tx=80, ty=60, sc=1;
+let dragging=false, startX=0, startY=0, startTX=0, startTY=0;
+let pinching=false, pinchMid={x:0,y:0}, pinchSc=1, pinchD=0;
 
 const cwrap=document.getElementById('cwrap');
 const canvas=document.getElementById('canvas');
 
-// Sex class
-function sc(p){return p.sex==='F'?'female':p.sex==='M'?'male':'other'}
-// Initials
+function sexCls(p){return p.sex==='F'?'female':p.sex==='M'?'male':'other'}
 function ini(n){const w=n.trim().split(/\s+/);return w.length>=2?(w[0][0]+w[w.length-1][0]).toUpperCase():n.slice(0,2).toUpperCase()}
-// Gen label
 function gl(d){return['Ancestor','Gen 1','Gen 2','Gen 3','Gen 4','Gen 5','Gen 6','Gen 7','Gen 8','Gen 9','Gen 10','Gen 11'][d]||'Gen '+d}
 
-// Max depth in current visible set
-function maxDepth(ids){return ids.length?Math.max(...ids.map(id=>P[id]?P[id].depth:0)):0;}
-
-// Should this person be shown given current filters?
-function visible(p){
+function isVis(p){
   if(!p) return false;
   if(filter==='live' && p.deceased) return false;
-  if(descFilter){
-    // Only show if descendant of descFilter
-    return isDescendant(p.id, descFilter);
+  if(descRoot){
+    // show if p is descRoot or a descendant
+    return isDescOf(p.id, descRoot);
   }
   return true;
 }
 
-// Check if 'id' is a descendant of 'ancestorId'
-function isDescendant(id, ancestorId, vis=new Set()){
-  if(id===ancestorId) return true;
-  if(vis.has(id)) return false;
-  vis.add(id);
-  const p=P[id]; if(!p||!p.parents) return false;
-  return p.parents.some(pid=>isDescendant(pid,ancestorId,vis));
+const descCache={};
+function isDescOf(id, anc){
+  const key=id+'_'+anc;
+  if(key in descCache) return descCache[key];
+  if(id===anc){ descCache[key]=true; return true; }
+  const p=P[id]; if(!p||!p.parents||!p.parents.length){ descCache[key]=false; return false; }
+  const r=p.parents.some(pid=>isDescOf(pid,anc));
+  descCache[key]=r; return r;
 }
 
-// Leaf width for layout
-function leafW(id,vis=new Set()){
+function leafW(id, vis=new Set()){
   if(vis.has(id)||collapsed.has(id)) return 1;
   vis.add(id);
   const p=P[id]; if(!p) return 1;
-  const kids=(p.children||[]).filter(c=>visible(P[c]));
+  const kids=(p.children||[]).filter(c=>isVis(P[c]));
   if(!kids.length) return 1;
   return kids.reduce((s,c)=>s+leafW(c,vis),0);
 }
 
-// Layout
 function placeNodes(rootId){
   const nodes=[], placed=new Set();
   function place(id,x,y,vis=new Set()){
-    if(vis.has(id)||!visible(P[id])) return;
+    if(vis.has(id)) return;
+    const p=P[id]; if(!p||!isVis(p)) return;
     vis.add(id); placed.add(id);
-    const p=P[id]; if(!p) return;
-    // Spouse
-    let sx=null;
+    let spX=null;
     if(p.spouses&&p.spouses.length){
-      const spId=p.spouses.find(s=>!placed.has(s)&&visible(P[s]));
-      if(spId){ placed.add(spId); sx=x+NW+HG+14; nodes.push({id:spId,x:sx,y,isSp:true}); }
+      const spId=p.spouses.find(s=>!placed.has(s)&&isVis(P[s]));
+      if(spId){ placed.add(spId); spX=x+NW+HG+14; nodes.push({id:spId,x:spX,y,isSp:true}); }
     }
-    nodes.push({id,x,y,sx});
+    nodes.push({id,x,y,spX});
     if(!collapsed.has(id)){
-      const kids=(p.children||[]).filter(c=>visible(P[c]));
+      const kids=(p.children||[]).filter(c=>isVis(P[c]));
       if(kids.length){
         const lws=kids.map(c=>leafW(c));
         const tot=lws.reduce((s,v)=>s+v,0);
         const totPx=tot*(NW+HG)-HG;
-        const parMid=sx?(x+NW/2+sx+NW/2)/2:x+NW/2;
+        const parMid=spX?(x+NW/2+spX+NW/2)/2:x+NW/2;
         let cx=parMid-totPx/2; if(cx<0)cx=0;
         const cy=y+NH+VG;
         kids.forEach((cid,i)=>{ const cw=lws[i]*(NW+HG); place(cid,cx+(cw-NW)/2,cy,vis); cx+=cw; });
       }
     }
   }
-  const root=P[rootId];
-  if(root&&visible(root)) place(rootId,0,0);
+  const root=P[rootId]; if(root&&isVis(root)) place(rootId,0,0);
   return nodes;
 }
 
-// Render
 function renderTree(){
   canvas.innerHTML='<svg id="lsvg"></svg>';
   const lsvg=document.getElementById('lsvg');
-  if(!activeRoot) return;
-  const nodes=placeNodes(descFilter||activeRoot);
-  if(!nodes.length){canvas.style.width='300px';canvas.style.height='200px';return;}
+  const root=descRoot||activeRoot; if(!root) return;
+
+  // Check if anything visible
+  const visCount=Object.values(P).filter(p=>isVis(p)).length;
+  if(visCount===0){
+    canvas.style.width='300px'; canvas.style.height='100px';
+    const msg=document.createElement('div');
+    msg.style.cssText='padding:30px;text-align:center;color:#888;font-size:14px';
+    msg.textContent='No living members found in this branch.';
+    canvas.appendChild(msg);
+    return;
+  }
+
+  const nodes=placeNodes(root);
+  if(!nodes.length){
+    canvas.style.width='300px'; canvas.style.height='100px';
+    return;
+  }
 
   let mnX=Infinity,mnY=Infinity,mxX=-Infinity,mxY=-Infinity;
-  nodes.forEach(n=>{mnX=Math.min(mnX,n.x);mnY=Math.min(mnY,n.y);mxX=Math.max(mxX,(n.sx||n.x)+NW);mxY=Math.max(mxY,n.y+NH);});
+  nodes.forEach(n=>{mnX=Math.min(mnX,n.x);mnY=Math.min(mnY,n.y);mxX=Math.max(mxX,(n.spX||n.x)+NW);mxY=Math.max(mxY,n.y+NH);});
   const pad=70, W=mxX-mnX+pad*2, H=mxY-mnY+pad*2;
   lsvg.style.width=W+'px'; lsvg.style.height=H+'px';
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
 
-  // Find max depth among visible nodes
-  const visIds=nodes.map(n=>n.id);
-  const mxDep=maxDepth(visIds);
+  const maxDep=Math.max(...nodes.map(n=>P[n.id]?P[n.id].depth:0));
 
   // Parent map
   const parNode={};
   nodes.forEach(n=>{
     if(n.isSp) return;
     const p=P[n.id]; if(!p||collapsed.has(n.id)) return;
-    (p.children||[]).filter(c=>visible(P[c])).forEach(cid=>{parNode[cid]=n;});
+    (p.children||[]).filter(c=>isVis(P[c])).forEach(cid=>{ parNode[cid]=n; });
   });
 
-  // Lines
+  // Connector lines
   nodes.forEach(n=>{
     const par=parNode[n.id]; if(!par||n.isSp) return;
     const cx=n.x-mnX+pad+NW/2, cy=n.y-mnY+pad;
-    const pmx=par.sx?((par.x-mnX+pad+NW/2)+(par.sx-mnX+pad+NW/2))/2:par.x-mnX+pad+NW/2;
+    const pmx=par.spX?((par.x-mnX+pad+NW/2)+(par.spX-mnX+pad+NW/2))/2:par.x-mnX+pad+NW/2;
     const pby=par.y-mnY+pad+NH, my=pby+VG*0.42;
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d',`M${pmx} ${pby} L${pmx} ${my} L${cx} ${my} L${cx} ${cy}`);
@@ -291,31 +301,33 @@ function renderTree(){
 
   // Spouse dashes
   nodes.forEach(n=>{
-    if(!n.sx) return;
-    const x1=n.x-mnX+pad+NW, y1=n.y-mnY+pad+NH/2, x2=n.sx-mnX+pad;
+    if(!n.spX) return;
+    const x1=n.x-mnX+pad+NW, y1=n.y-mnY+pad+NH/2, x2=n.spX-mnX+pad;
     const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
     ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y1);
     ln.setAttribute('stroke','#C8B89A');ln.setAttribute('stroke-width','1.5');ln.setAttribute('stroke-dasharray','4 3');
     lsvg.appendChild(ln);
     const ht=document.createElementNS('http://www.w3.org/2000/svg','text');
     ht.setAttribute('x',(x1+x2)/2);ht.setAttribute('y',y1+4);ht.setAttribute('text-anchor','middle');
-    ht.setAttribute('font-size','9');ht.setAttribute('fill','#C8B89A'); ht.textContent='♥';
+    ht.setAttribute('font-size','9');ht.setAttribute('fill','#C8B89A');ht.textContent='♥';
     lsvg.appendChild(ht);
   });
 
-  // Nodes
+  // Draw nodes
   nodes.forEach(n=>{
     const p=P[n.id]; if(!p) return;
     const nx=n.x-mnX+pad, ny=n.y-mnY+pad;
-    const cls=sc(p), isLeaf=p.depth===mxDep;
+    const cls=sexCls(p), isLeaf=p.depth===maxDep;
     const div=document.createElement('div');
-    div.className='nd'; div.style.cssText=`left:${nx}px;top:${ny}px;width:${NW}px`;
+    div.className='nd';
+    div.style.cssText=`left:${nx}px;top:${ny}px;width:${NW}px`;
+
     const pill=document.createElement('div');
     pill.className=`npill ${cls}${p.deceased?' dead':''}`;
     pill.dataset.id=p.id;
-    // Age: only show on latest generation (max depth) if birth year known
+
     let ageHtml='';
-    if(isLeaf && p.birth){
+    if(isLeaf&&p.birth){
       const by=parseInt(p.birth.replace(/\D/g,'').slice(-4));
       if(!isNaN(by)){
         const age=p.deceased&&p.death?parseInt(p.death.replace(/\D/g,'').slice(-4))-by:2026-by;
@@ -323,101 +335,107 @@ function renderTree(){
       }
     }
     pill.innerHTML=`<span class="nname">${p.name}</span>${ageHtml}`;
-    pill.onclick=()=>showProfile(p.id);
+    pill.addEventListener('click', e=>{ e.stopPropagation(); showProfile(p.id); });
     div.appendChild(pill);
-    // Expand btn
-    const kids=(p.children||[]).filter(c=>visible(P[c]));
-    const xbtn=document.createElement('div');
-    xbtn.className=`xbtn${kids.length?'':' hide'}`;
-    xbtn.textContent=kids.length?(collapsed.has(p.id)?'+':'−'):'';
-    if(kids.length) xbtn.onclick=e=>{e.stopPropagation();collapsed.has(p.id)?collapsed.delete(p.id):collapsed.add(p.id);renderTree();};
-    div.appendChild(xbtn);
+
+    const kids=(p.children||[]).filter(c=>isVis(P[c]));
+    const xb=document.createElement('div');
+    xb.className=`xbtn${kids.length?'':' hide'}`;
+    xb.textContent=kids.length?(collapsed.has(p.id)?'+':'−'):'';
+    if(kids.length) xb.addEventListener('click',e=>{ e.stopPropagation(); collapsed.has(p.id)?collapsed.delete(p.id):collapsed.add(p.id); renderTree(); });
+    div.appendChild(xb);
     canvas.appendChild(div);
   });
 
-  // Update stat
-  const vis=Object.values(P).filter(p=>visible(p));
-  document.getElementById('stat').textContent=`${vis.length} shown · ${Object.values(P).filter(p=>p.deceased).length} deceased`;
+  const live=Object.values(P).filter(p=>!p.deceased).length;
+  document.getElementById('stat').textContent=`${visCount} shown · ${Object.values(P).filter(p=>p.deceased).length} deceased · ${live} living`;
 }
 
-// Transform
-function applyT(){ canvas.style.transform=`translate(${Math.round(panX)}px,${Math.round(panY)}px) scale(${scale})`; }
+// ── Transform ──
+function applyT(){ canvas.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`; }
 
 function resetView(){
   setTimeout(()=>{
     const cw=parseInt(canvas.style.width)||400, ch=parseInt(canvas.style.height)||400;
     const ww=cwrap.clientWidth, wh=cwrap.clientHeight;
-    scale=Math.min(1,(ww-40)/(cw),(wh-80)/ch);
-    scale=Math.max(0.1,Math.min(1.5,scale));
-    panX=(ww-cw*scale)/2; panY=55;
-    applyT();
-  },60);
+    sc=Math.min(1,(ww-40)/cw,(wh-80)/ch);
+    sc=Math.max(0.08,Math.min(1.5,sc));
+    tx=(ww-cw*sc)/2; ty=55; applyT();
+  },80);
 }
 
-// ── PAN: pointer events (works mouse + touch + stylus) ──
-cwrap.addEventListener('pointerdown',e=>{
-  // Ignore clicks on buttons/pills
-  if(e.target.closest('.xbtn,.tbtn,.sbar,.hbtn,.hbtns,.tbar,.tpill')) return;
-  cwrap.setPointerCapture(e.pointerId);
-  panning=true; lastX=e.clientX; lastY=e.clientY;
+// ── PAN via mouse ──
+cwrap.addEventListener('mousedown',e=>{
+  if(e.button!==0) return;
+  // Only pan on direct canvas background clicks, not pill/button
+  dragging=true;
+  startX=e.clientX; startY=e.clientY;
+  startTX=tx; startTY=ty;
+  cwrap.classList.add('grabbing');
   e.preventDefault();
-},{passive:false});
-
-cwrap.addEventListener('pointermove',e=>{
-  if(!panning) return;
-  const dx=e.clientX-lastX, dy=e.clientY-lastY;
-  panX+=dx; panY+=dy;
-  lastX=e.clientX; lastY=e.clientY;
+});
+document.addEventListener('mousemove',e=>{
+  if(!dragging) return;
+  tx=startTX+(e.clientX-startX);
+  ty=startTY+(e.clientY-startY);
   applyT();
-  e.preventDefault();
-},{passive:false});
+});
+document.addEventListener('mouseup',()=>{ dragging=false; cwrap.classList.remove('grabbing'); });
 
-cwrap.addEventListener('pointerup',e=>{ panning=false; });
-cwrap.addEventListener('pointercancel',e=>{ panning=false; });
-
-// ── ZOOM: wheel ──
+// ── ZOOM via wheel ──
 cwrap.addEventListener('wheel',e=>{
   e.preventDefault();
-  const delta=e.deltaY<0?1.08:0.93;
+  const f=e.deltaY<0?1.08:0.93;
   const rect=cwrap.getBoundingClientRect();
   const ox=e.clientX-rect.left, oy=e.clientY-rect.top;
-  const ns=Math.min(4,Math.max(0.08,scale*delta));
-  panX=ox-(ox-panX)*(ns/scale); panY=oy-(oy-panY)*(ns/scale);
-  scale=ns; applyT();
+  const ns=Math.min(4,Math.max(0.05,sc*f));
+  tx=ox-(ox-tx)*(ns/sc); ty=oy-(oy-ty)*(ns/sc);
+  sc=ns; applyT();
 },{passive:false});
 
-// ── PINCH ZOOM: touch events ──
-let t1=null,t2=null,initD=null,initS=null,initPX=null,initPY=null;
+// ── TOUCH: single finger pan, two finger pinch ──
+let touches=[];
 cwrap.addEventListener('touchstart',e=>{
-  if(e.touches.length===2){
-    e.preventDefault();
-    panning=false;
-    t1=e.touches[0]; t2=e.touches[1];
-    initD=Math.hypot(t2.clientX-t1.clientX,t2.clientY-t1.clientY);
-    initS=scale;
-    initPX=panX; initPY=panY;
-    const cx=(t1.clientX+t2.clientX)/2-cwrap.getBoundingClientRect().left;
-    const cy=(t1.clientY+t2.clientY)/2-cwrap.getBoundingClientRect().top;
-    t1={...t1,cx,cy};
+  e.preventDefault();
+  touches=Array.from(e.touches);
+  if(touches.length===1){
+    dragging=true;
+    startX=touches[0].clientX; startY=touches[0].clientY;
+    startTX=tx; startTY=ty;
+  } else if(touches.length===2){
+    dragging=false;
+    pinching=true;
+    pinchD=Math.hypot(touches[1].clientX-touches[0].clientX,touches[1].clientY-touches[0].clientY);
+    pinchSc=sc;
+    pinchMid={
+      x:(touches[0].clientX+touches[1].clientX)/2-cwrap.getBoundingClientRect().left,
+      y:(touches[0].clientY+touches[1].clientY)/2-cwrap.getBoundingClientRect().top
+    };
+    startTX=tx; startTY=ty;
   }
 },{passive:false});
 
 cwrap.addEventListener('touchmove',e=>{
-  if(e.touches.length===2&&initD){
-    e.preventDefault();
-    const a=e.touches[0],b=e.touches[1];
-    const nd=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
-    const ns=Math.min(4,Math.max(0.08,initS*(nd/initD)));
-    const cx=(a.clientX+b.clientX)/2-cwrap.getBoundingClientRect().left;
-    const cy=(a.clientY+b.clientY)/2-cwrap.getBoundingClientRect().top;
-    panX=cx-(t1.cx)*(ns/initS)+initPX-(initPX)*(ns/initS-1);
-    panX=cx-(cx-initPX)*(ns/initS);
-    panY=cy-(cy-initPY)*(ns/initS);
-    scale=ns; applyT();
+  e.preventDefault();
+  const ts=Array.from(e.touches);
+  if(ts.length===1&&dragging){
+    tx=startTX+(ts[0].clientX-startX);
+    ty=startTY+(ts[0].clientY-startY);
+    applyT();
+  } else if(ts.length===2&&pinching){
+    const nd=Math.hypot(ts[1].clientX-ts[0].clientX,ts[1].clientY-ts[0].clientY);
+    const ns=Math.min(4,Math.max(0.05,pinchSc*(nd/pinchD)));
+    tx=pinchMid.x-(pinchMid.x-startTX)*(ns/pinchSc);
+    ty=pinchMid.y-(pinchMid.y-startTY)*(ns/pinchSc);
+    sc=ns; applyT();
   }
 },{passive:false});
 
-cwrap.addEventListener('touchend',e=>{ if(e.touches.length<2){initD=null;} });
+cwrap.addEventListener('touchend',e=>{
+  touches=Array.from(e.touches);
+  if(touches.length===0){ dragging=false; pinching=false; }
+  if(touches.length===1){ pinching=false; dragging=true; startX=touches[0].clientX; startY=touches[0].clientY; startTX=tx; startTY=ty; }
+},{passive:false});
 
 // ── Orientation ──
 function setOri(o){
@@ -430,25 +448,26 @@ function setOri(o){
 // ── Filters ──
 function setFilter(f){
   filter=f;
+  Object.keys(descCache).forEach(k=>delete descCache[k]);
   document.getElementById('tAll').classList.toggle('act',f==='all');
   document.getElementById('tLive').classList.toggle('act',f==='live');
-  collapsed=new Set();
-  renderTree(); resetView();
+  collapsed=new Set(); renderTree(); resetView();
 }
 
-function viewDescendants(){
+function viewDesc(){
   if(!curId) return;
-  descFilter=curId;
-  document.getElementById('tDesc').style.display='block';
+  descRoot=curId;
+  Object.keys(descCache).forEach(k=>delete descCache[k]);
+  document.getElementById('tBack').style.display='block';
   document.getElementById('tAll').style.display='none';
   document.getElementById('tLive').style.display='none';
-  closePanel();
-  renderTree(); resetView();
+  closePanel(); renderTree(); resetView();
 }
 
-function clearDescFilter(){
-  descFilter=null;
-  document.getElementById('tDesc').style.display='none';
+function clearDesc(){
+  descRoot=null;
+  Object.keys(descCache).forEach(k=>delete descCache[k]);
+  document.getElementById('tBack').style.display='none';
   document.getElementById('tAll').style.display='block';
   document.getElementById('tLive').style.display='block';
   renderTree(); resetView();
@@ -462,18 +481,18 @@ function buildTabs(){
   [root,...g3].forEach(p=>{
     if(!p) return;
     const d=document.createElement('div');
-    d.className=`tpill ${sc(p)}${p.deceased?' dead':''}`;
-    d.innerHTML=`<span class="tname">${p.name}</span>`;
-    d.onclick=()=>{ descFilter=null; document.getElementById('tDesc').style.display='none'; document.getElementById('tAll').style.display='block'; document.getElementById('tLive').style.display='block'; selTab(p.id,d); };
+    d.className=`tp ${sexCls(p)}${p.deceased?' dead':''}`;
+    d.innerHTML=`<span>${p.name}</span>`;
+    d.onclick=()=>{ descRoot=null; Object.keys(descCache).forEach(k=>delete descCache[k]); document.getElementById('tBack').style.display='none'; document.getElementById('tAll').style.display='block'; document.getElementById('tLive').style.display='block'; selTab(p.id,d); };
     bar.appendChild(d);
   });
-  const first=bar.querySelector('.tpill');
+  const first=bar.querySelector('.tp');
   if(root&&first) selTab(root.id,first);
 }
 
 function selTab(id,el){
   activeRoot=id; collapsed=new Set();
-  document.querySelectorAll('.tpill').forEach(b=>b.classList.remove('act'));
+  document.querySelectorAll('.tp').forEach(b=>b.classList.remove('act'));
   if(el) el.classList.add('act');
   renderTree(); resetView();
 }
@@ -481,13 +500,13 @@ function selTab(id,el){
 // ── Profile ──
 function showProfile(id){
   const p=P[id]; if(!p) return; curId=id;
-  const cls=sc(p), dead=p.deceased;
+  const cls=sexCls(p), dead=p.deceased;
   document.getElementById('ph').innerHTML=`
     <div class="pav ${cls}${dead?' dead':''}">${ini(p.name)}</div>
     <div style="flex:1">
       <div class="pname${dead?' dead':''}">${p.name}${dead?' †':''}</div>
       <div class="psub">${gl(p.depth)}${p.city?' · '+p.city:''}</div>
-      <div class="psub" style="margin-top:2px">${dead?'Deceased':'Living'}${p.birth?' · b. '+p.birth:''}${dead&&p.death?' · d. '+p.death:''}</div>
+      <div class="psub" style="margin-top:2px">${dead?'<span style="color:var(--red)">Deceased</span>':'<span style="color:green">Living</span>'}${p.birth?' · b. '+p.birth:''}${dead&&p.death?' · d. '+p.death:''}</div>
     </div>
     <button class="clsx" onclick="closePanel()">×</button>`;
   let b='';
@@ -503,14 +522,12 @@ function showProfile(id){
 }
 
 function fld(l,v){return`<div class="pfld"><div class="plbl">${l}</div><div class="pval">${v}</div></div>`;}
-
 function pillsOf(ids){
   return`<div class="ppills">${ids.map(id=>{
     const q=P[id]; if(!q) return '';
-    return`<div class="pp ${sc(q)}${q.deceased?' dead':''}" onclick="showProfile('${id}')">${q.name}${q.deceased?' †':''}</div>`;
+    return`<div class="pp ${sexCls(q)}${q.deceased?' dead':''}" onclick="showProfile('${id}')">${q.name}${q.deceased?' †':''}</div>`;
   }).join('')}</div>`;
 }
-
 function closePanel(){ document.getElementById('ov').classList.remove('open'); }
 
 // ── Edit ──
@@ -519,28 +536,25 @@ function startEdit(){
   doEdit();
 }
 function chkPin(){
-  if(document.getElementById('pininp').value===ADMIN_PIN){ isAdmin=true; document.getElementById('pinov').classList.remove('open'); doEdit(); }
+  if(document.getElementById('pininp').value===PIN){ isAdmin=true; document.getElementById('pinov').classList.remove('open'); doEdit(); }
   else document.getElementById('pinerr').textContent='Incorrect PIN';
 }
 function doEdit(){
   const p=P[curId]; if(!p) return;
-  document.getElementById('pb').innerHTML=`
-    <div style="padding:2px 0">
-      <label class="flbl">Full Name</label><input class="inp" id="en" value="${p.name}">
-      <div style="display:flex;gap:8px">
-        <div style="flex:1"><label class="flbl">Gender</label>
-        <select class="sel" id="es"><option value="M" ${p.sex==='M'?'selected':''}>Male</option><option value="F" ${p.sex==='F'?'selected':''}>Female</option><option value="Other" ${p.sex==='Other'?'selected':''}>Other</option></select></div>
-        <div style="flex:1"><label class="flbl">Status</label>
-        <select class="sel" id="ed"><option value="0" ${!p.deceased?'selected':''}>Living</option><option value="1" ${p.deceased?'selected':''}>Deceased</option></select></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <div style="flex:1"><label class="flbl">Birth Year</label><input class="inp" id="eb" value="${p.birth}" placeholder="1952"></div>
-        <div style="flex:1"><label class="flbl">Death Year</label><input class="inp" id="edd" value="${p.death}" placeholder="2010"></div>
-      </div>
-      <label class="flbl">City</label><input class="inp" id="ec" value="${p.city}" placeholder="Vadodara">
-      <label class="flbl">Notes</label><input class="inp" id="enote" value="${p.note||''}">
-      <button class="savebtn" onclick="saveEdit()">💾 Save Changes</button>
-    </div>`;
+  document.getElementById('pb').innerHTML=`<div style="padding:2px 0">
+    <label class="flbl">Full Name</label><input class="inp" id="en" value="${p.name}">
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label class="flbl">Gender</label><select class="sel" id="es"><option value="M" ${p.sex==='M'?'selected':''}>Male</option><option value="F" ${p.sex==='F'?'selected':''}>Female</option><option value="Other" ${p.sex==='Other'?'selected':''}>Other</option></select></div>
+      <div style="flex:1"><label class="flbl">Status</label><select class="sel" id="ed"><option value="0" ${!p.deceased?'selected':''}>Living</option><option value="1" ${p.deceased?'selected':''}>Deceased</option></select></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label class="flbl">Birth Year</label><input class="inp" id="eb" value="${p.birth}" placeholder="1952"></div>
+      <div style="flex:1"><label class="flbl">Death Year</label><input class="inp" id="edd" value="${p.death}" placeholder="2010"></div>
+    </div>
+    <label class="flbl">City</label><input class="inp" id="ec" value="${p.city}" placeholder="Vadodara">
+    <label class="flbl">Notes</label><input class="inp" id="enote" value="${p.note||''}">
+    <button class="svbtn" onclick="saveEdit()">💾 Save Changes</button>
+  </div>`;
 }
 function saveEdit(){
   const p=P[curId]; if(!p) return;
@@ -561,7 +575,7 @@ function doSearch(q){
   document.querySelectorAll('.npill').forEach(el=>{
     const p=P[el.dataset.id]; if(!p) return;
     const hit=p.name.toLowerCase().includes(q)||(p.city&&p.city.toLowerCase().includes(q));
-    el.style.opacity=(!q||hit)?'1':'0.12';
+    el.style.opacity=(!q||hit)?'1':'0.1';
     el.style.outline=hit&&q?'2.5px solid var(--gold)':'none';
   });
 }
