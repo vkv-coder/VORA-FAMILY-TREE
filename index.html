@@ -132,7 +132,7 @@ header{background:var(--ink);color:#fff;padding:10px 12px 7px;flex-shrink:0}
     <div class="phead" id="ph"></div>
     <div class="pbody" id="pb"></div>
     <button class="dbtn" onclick="showDescendants()">&#127807; View all descendants</button>
-    <button class="dbtn" id="addRelBtn" style="margin-top:4px" onclick="showAddRel()">&#43; Add Relative</button>
+    <button class="dbtn" id="addRelBtn" style="margin-top:4px" onclick="checkPinThen('showAddRel')">&#43; Add Relative</button>
     <button class="ebtn" onclick="startEdit()">&#9998; Edit Details</button>
   </div>
 </div>
@@ -150,7 +150,7 @@ const FD={"individuals":{"I1":{"id":"I1","name":"VIJAY VORA","sex":"M","deceased
 const PM={"I1":["I2"],"I2":["I3"],"I3":["I12"],"I13":["I12"],"I4":["I3"],"I5":["I3"],"I6":["I4"],"I7":["I4"],"I8":["I5"],"I9":["I5"],"I10":["I5"],"I11":["I7"],"I20":["I13"],"I21":["I13"],"I22":["I13"],"I28":["I13"],"I23":["I20"],"I24":["I20"],"I25":["I24"],"I26":["I23"],"I27":["I26"],"I29":["I22"],"I30":["I22"],"I31":["I22"],"I32":["I22"],"I33":["I22"],"I34":["I22"],"I35":["I28"],"I36":["I35"],"I37":["I35"],"I38":["I29"],"I39":["I29"],"I40":["I32"],"I41":["I18"],"I42":["I17"],"I43":["I17"],"I44":["I42"],"I45":["I44"],"I46":["I44"],"I47":["I46"],"I48":["I46"],"I49":["I46"],"I50":["I46"],"I51":["I48"],"I52":["I48"],"I53":["I51"],"I54":["I16"],"I55":["I54"],"I56":["I55"],"I57":["I56"],"I58":["I57"],"I59":["I58"],"I61":["I58"],"I62":["I58"],"I60":["I59"],"I64":["I62"],"I65":["I15"],"I66":["I15"],"I67":["I65"],"I68":["I67"],"I69":["I66"],"I70":["I66"],"I71":["I66"],"I72":["I66"],"I73":["I69"],"I74":["I69"],"I75":["I70"],"I76":["I72"],"I77":["I72"],"I78":["I76"],"I79":["I76"],"I80":["I76"],"I81":["I76"],"I82":["I78"],"I84":["I78"],"I85":["I78"],"I83":["I82"],"I86":["I84"],"I87":["I79"],"I88":["I79"],"I89":["I79"],"I90":["I79"],"I91":["I87"],"I92":["I87"],"I93":["I88"],"I94":["I88"],"I96":["I80"],"I97":["I80"],"I98":["I97"],"I99":["I95"],"I100":["I81"],"I101":["I100"],"I102":["I77"],"I103":["I77"],"I104":["I103"],"I105":["I103"],"I106":["I14"],"I107":["I14"],"I108":["I105"],"I109":["I105"],"I110":["I68"],"I111":["I110"],"I112":["I111"],"I113":["I102"],"I114":["I41"],"I115":["I41"],"I116":["I41"],"I117":["I114"],"I118":["I114"],"I119":["I114"],"I120":["I117"],"I124":["I117"],"I125":["I117"],"I126":["I117"],"I121":["I120"],"I122":["I120"],"I123":["I120"],"I127":["I121"],"I128":["I121"],"I129":["I127"],"I130":["I128"],"I131":["I128"],"I132":["I128"],"I133":["I128"],"I134":["I128"],"I135":["I128"],"I136":["I122"],"I138":["I137"],"I139":["I136"],"I141":["I136"],"I142":["I139"],"I144":["I139"],"I145":["I123"],"I146":["I123"],"I148":["I123"],"I149":["I145"],"I150":["I145"],"I151":["I149"],"I152":["I150"],"I153":["I147"],"I154":["I147"],"I155":["I124"],"I156":["I124"],"I157":["I124"],"I158":["I155"],"I160":["I158"],"I162":["I158"],"I163":["I158"],"I161":["I160"],"I164":["I162"],"I165":["I156"],"I166":["I156"],"I167":["I156"],"I168":["I156"],"I169":["I165"],"I170":["I165"],"I171":["I165"],"I172":["I171"],"I244":["I171"],"I173":["I166"],"I174":["I167"],"I175":["I167"],"I176":["I175"],"I177":["I168"],"I178":["I168"],"I179":["I168"],"I180":["I177"],"I245":["I177"],"I181":["I125"],"I182":["I181"],"I184":["I181"],"I193":["I181"],"I183":["I126"],"I185":["I184"],"I186":["I184"],"I188":["I185"],"I189":["I185"],"I190":["I186"],"I191":["I186"],"I192":["I187"],"I194":["I193"],"I195":["I193"],"I196":["I194"],"I197":["I194"],"I198":["I119"],"I199":["I198"],"I200":["I198"],"I201":["I115"],"I202":["I201"],"I203":["I201"],"I204":["I201"],"I205":["I202"],"I206":["I203"],"I207":["I204"],"I208":["I116"],"I212":["I116"],"I209":["I208"],"I211":["I210"],"I213":["I212"],"I214":["I212"],"I216":["I214"],"I217":["I214"],"I218":["I214"],"I219":["I215"],"I220":["I219"],"I221":["I219"],"I222":["I219"],"I223":["I219"],"I224":["I219"],"I225":["I219"],"I226":["I220"],"I227":["I220"],"I228":["I221"],"I229":["I222"],"I230":["I224"],"I231":["I1"],"I232":["I1"],"I233":["I31"],"I234":["I154"],"I235":["I154"],"I236":["I129"],"I237":["I129"],"I238":["I53"],"I239":["I53"],"I240":["I60"],"I241":["I112"],"I242":["I101"],"I243":["I142"],"I246":["I226"],"I247":["I227"],"I248":["I83"],"I249":["I92"],"I250":["I92"],"I251":["I225"],"I252":["I228"],"I253":["I164"],"I12":["I14"],"I14":["I15"],"I15":["I16"],"I16":["I17"],"I17":["I18"],"I18":["I19"],"I19":[],"I63":["I61"],"I95":["I80"],"I137":["I122"],"I140":["I136"],"I143":["I140"],"I147":["I123"],"I159":["I155"],"I187":["I184"],"I210":["I209"],"I215":["I214"]};
 
 const P=FD.individuals;
-const PIN='1234';
+const PIN='vkv2';
 var isAdmin=false, curId=null;
 var mode='all'; // 'all' | 'living' | 'desc'
 var descId=null; // person whose descendants to show
@@ -467,61 +467,81 @@ function addRelBtn(label,type,pid){
 }
 function addRel(type,pid){
   var p=P[pid]; if(!p) return;
-  // Generate new ID
   var ids=Object.keys(P).map(function(k){ return parseInt(k.slice(1)); });
   var newId='I'+(Math.max.apply(null,ids)+1);
-  var newName=prompt('Enter name:');
+  var newName=prompt('Enter full name:');
   if(!newName||!newName.trim()) return;
   newName=newName.trim();
   var newPerson={id:newId,name:newName,sex:'M',deceased:false,birth:'',death:'',city:'',note:'',depth:0,children:[],spouses:[],parents:[]};
+
   if(type==='spouse'){
-    newPerson.sex=p.sex==='M'?'F':'M';
+    // Spouse appears LEFT of person (via spouse line in layout)
+    newPerson.sex=p.sex==='M'?'F':'M'; // opposite sex default
     newPerson.depth=p.depth;
-    p.spouses=p.spouses||[]; p.spouses.push(newId);
+    // Add to spouses list - layout places spouse to left
+    if(!p.spouses) p.spouses=[];
+    p.spouses.unshift(newId); // unshift = appears LEFT
     newPerson.spouses=[pid];
-    PM[newId]=PM[pid]||[];
+    PM[newId]=PM[pid]?PM[pid].slice():[];
+    // Share same children
+    newPerson.children=p.children?p.children.slice():[];
+
   } else if(type==='son'||type==='daughter'){
+    // Child appears BELOW (depth+1)
     newPerson.sex=type==='son'?'M':'F';
     newPerson.depth=p.depth+1;
-    p.children=p.children||[]; p.children.push(newId);
+    if(!p.children) p.children=[];
+    p.children.push(newId);
     newPerson.parents=[pid];
     PM[newId]=[pid];
+    // Also add spouse as parent if exists
+    if(p.spouses&&p.spouses.length){
+      var sp=p.spouses[0];
+      PM[newId].push(sp);
+      var spP=P[sp]; if(spP){ if(!spP.children) spP.children=[]; spP.children.push(newId); }
+    }
+
   } else if(type==='father'||type==='mother'){
+    // Parent appears ABOVE (depth-1)
     newPerson.sex=type==='father'?'M':'F';
     newPerson.depth=p.depth-1;
+    if(!newPerson.children) newPerson.children=[];
     newPerson.children=[pid];
-    p.parents=p.parents||[]; p.parents.push(newId);
-    PM[pid]=PM[pid]||[]; PM[pid].push(newId);
+    if(!p.parents) p.parents=[];
+    p.parents.push(newId);
+    PM[pid]=PM[pid]||[];
+    PM[pid].push(newId);
   }
+
   P[newId]=newPerson;
   closePanel();
   renderTree(ROOT);
-  setTimeout(function(){ showProfile(newId); },100);
+  setTimeout(function(){ showProfile(newId); },150);
 }
 
 function initView(){
   collapsed=new Set();
+  // Show gen 0-4, collapse gen5+
   Object.values(P).forEach(function(p){ if(p.depth>=5) collapsed.add(p.id); });
   renderTree(ROOT);
   setTimeout(function(){
     var ww=cwrap.clientWidth;
+    var cw=parseInt(mover.style.width)||800;
     sc=mob?0.55:0.5;
     var ratPos=nodePos[ROOT];
     if(ratPos){
-      // Centre Ratanshi box on screen
       tx=Math.round(ww/2-(ratPos.nx+NW/2)*sc);
     } else {
-      tx=Math.round((ww-parseInt(mover.style.width||800)*sc)/2);
+      tx=Math.round((ww-cw*sc)/2);
     }
     ty=50; applyT();
-  },200);
+    console.log('Ratanshi pos:', ratPos, 'tx:', tx, 'sc:', sc, 'ww:', ww);
+  },300); // longer delay for large tree
 }
 
 function showAll(){
   mode='all'; descId=null; descMemo={};
-  // Full tree: collapse only gen6+ so more is visible
-  collapsed=new Set();
-  Object.values(P).forEach(function(p){ if(p.depth>=6) collapsed.add(p.id); });
+  collapsed=new Set(); // NO collapse - show all 253
   document.getElementById('tAll').classList.add('act');
   document.getElementById('tLive').classList.remove('act');
   document.getElementById('tBack').style.display='none';
@@ -529,14 +549,15 @@ function showAll(){
   document.getElementById('tLive').style.display='block';
   renderTree(ROOT);
   setTimeout(function(){
-    var ww=cwrap.clientWidth;
+    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
     var cw=parseInt(mover.style.width)||800;
-    // Bigger scale — nodes readable, user can pan
-    sc=mob?0.7:0.6;
+    var ch=parseInt(mover.style.height)||600;
+    // Scale so first 4 generations are readable, user pans for rest
+    sc=mob?0.55:0.5;
     var ratPos=nodePos[ROOT];
     tx=ratPos?Math.round(ww/2-(ratPos.nx+NW/2)*sc):Math.round((ww-cw*sc)/2);
     ty=50; applyT();
-  },120);
+  },150);
 }
 
 function showLiving(){
@@ -593,13 +614,27 @@ function pillsOf(ids){
 }
 function closePanel(){ document.getElementById('ov').classList.remove('open'); }
 
+function checkPinThen(fn){
+  if(!isAdmin){
+    pendingFn=fn;
+    document.getElementById('pinov').classList.add('open');
+    document.getElementById('pininp').value='';
+    document.getElementById('pinerr').textContent='';
+  } else { window[fn](); }
+}
+var pendingFn=null;
+
 function startEdit(){
   if(!isAdmin){ document.getElementById('pinov').classList.add('open'); document.getElementById('pininp').value=''; document.getElementById('pinerr').textContent=''; return; }
   doEdit();
 }
 function chkPin(){
-  if(document.getElementById('pininp').value===PIN){ isAdmin=true; document.getElementById('pinov').classList.remove('open'); doEdit(); }
-  else document.getElementById('pinerr').textContent='Incorrect PIN';
+  if(document.getElementById('pininp').value===PIN){
+    isAdmin=true;
+    document.getElementById('pinov').classList.remove('open');
+    if(pendingFn){ var fn=pendingFn; pendingFn=null; window[fn](); }
+    else doEdit();
+  } else document.getElementById('pinerr').textContent='Incorrect PIN';
 }
 function doEdit(){
   var p=P[curId]; if(!p) return;
@@ -632,8 +667,6 @@ function saveEdit(){
   closePanel(); renderTree(ROOT); setTimeout(function(){ showProfile(curId); },80);
 }
 
-// Search: type name -> show full tree, highlight match, centre on it
-// Show 1 gen above + person + 1 gen below visible on screen
 function doSearch(q){
   q=q.trim().toLowerCase();
   document.getElementById('sclr').style.display=q?'block':'none';
@@ -643,38 +676,39 @@ function doSearch(q){
   });
   if(!matches.length) return;
   var first=matches[0];
-  // Show full tree but ensure first match + parent + children are expanded
+  // Show full tree, ensure person + parents + children uncollapsed
   mode='all'; descId=null; descMemo={};
   collapsed=new Set();
   Object.values(P).forEach(function(p){ if(p.depth>=5) collapsed.add(p.id); });
-  // Make sure parent and the person and children are NOT collapsed
+  // Uncollapse path from root to this person
   collapsed.delete(first.id);
   var pars=PM[first.id]||[];
-  pars.forEach(function(pid){ collapsed.delete(pid); });
+  pars.forEach(function(pid){
+    collapsed.delete(pid);
+    var gps=PM[pid]||[];
+    gps.forEach(function(gid){ collapsed.delete(gid); });
+  });
   document.getElementById('tBack').style.display='block';
   document.getElementById('tAll').style.display='none';
   document.getElementById('tLive').style.display='none';
   renderTree(ROOT);
   setTimeout(function(){
-    // Scale so person + 1 above + 1 below fit on screen
-    var wh=cwrap.clientHeight, ww=cwrap.clientWidth;
-    sc=Math.min(1, wh/(NH*3+VG*2+100));
-    sc=Math.max(0.3, Math.min(1.2, sc));
-    // Centre on person
+    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
     var pos=nodePos[first.id];
     if(pos){
+      // Zoom so person box is large and readable
+      sc=mob?0.9:0.85;
+      // Centre person on screen, show 1 gen above (subtract VG+NH)
       tx=Math.round(ww/2-(pos.nx+NW/2)*sc);
-      ty=Math.round(wh/2-(pos.ny+NH/2)*sc);
+      ty=Math.round(wh/3-(pos.ny)*sc); // 1/3 from top = person visible with parent above
       applyT();
     }
-    // Highlight all matches
     matches.forEach(function(p){
       var el=document.querySelector('.npill[data-id="'+p.id+'"]');
       if(el) el.classList.add('sel');
     });
-    // Show ancestor trail
     showTrail(first.id);
-  },150);
+  },200);
 }
 function clearSearch(){
   document.getElementById('srch').value=''; document.getElementById('sclr').style.display='none';
