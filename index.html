@@ -17,26 +17,26 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;height:100vh}
 
-/* ── HEADER ── */
-header{background:var(--ink);color:#fff;padding:10px 12px 8px;flex-shrink:0}
-.hrow1{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.logo{flex:1;min-width:0}
-.logo h1{font-family:'Playfair Display',serif;font-size:clamp(16px,4.5vw,22px);font-weight:700;color:#fff;line-height:1.2}
+/* HEADER */
+header{background:var(--ink);color:#fff;padding:10px 12px 7px;flex-shrink:0}
+.hrow1{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.logo h1{font-family:'Playfair Display',serif;font-size:clamp(16px,4.5vw,22px);font-weight:700;color:#fff;line-height:1.2;flex:1}
 .hbtns{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
 .hbtn{background:rgba(255,255,255,0.13);border:none;color:#fff;border-radius:6px;padding:6px 9px;font-size:clamp(10px,2.5vw,12px);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .hbtn.act{background:var(--gold);color:var(--ink);font-weight:600}
 .hbtn.pdf{background:#8B0000;color:#fff}
-.namah-row{text-align:center;font-size:clamp(12px,3.2vw,15px);color:var(--gold);font-style:italic;font-family:'Playfair Display',serif;padding:3px 0;letter-spacing:.5px}
-.loc-row{text-align:center;font-size:clamp(11px,2.8vw,13px);color:rgba(255,255,255,0.7);padding:2px 0 5px;letter-spacing:.2px}
-/* Breadcrumb - only shows when person tapped */
-.breadcrumb{font-size:clamp(12px,3vw,14px);color:rgba(255,255,255,0.9);white-space:nowrap;overflow-x:auto;scrollbar-width:none;min-height:0;max-height:0;overflow:hidden;transition:max-height .2s;font-weight:500}
-.breadcrumb.show{max-height:30px}
-.breadcrumb::-webkit-scrollbar{display:none}
+.namah-row{text-align:center;font-size:clamp(12px,3.2vw,15px);color:var(--gold);font-style:italic;font-family:'Playfair Display',serif;padding:3px 0}
+.loc-row{text-align:center;font-size:clamp(11px,2.8vw,13px);color:rgba(255,255,255,0.7);padding:1px 0 4px;cursor:pointer;text-decoration:underline dotted rgba(255,255,255,0.3)}
+.loc-row:hover{color:#fff}
+/* Breadcrumb: hidden by default, shows when person tapped */
+.bc{font-size:clamp(11px,2.8vw,13px);color:rgba(255,255,255,0.85);white-space:nowrap;overflow-x:auto;scrollbar-width:none;height:0;overflow:hidden;transition:height .2s;font-weight:500;padding:0}
+.bc.show{height:22px;padding:2px 0}
+.bc::-webkit-scrollbar{display:none}
 .bci{display:inline;cursor:pointer}
 .bci:hover{color:var(--gold)}
-.bcs{color:var(--gold);margin:0 4px;font-size:11px}
+.bcs{color:var(--gold);margin:0 4px;font-size:10px}
 
-/* ── TABS ── */
+/* TABS */
 .tbar{background:#111;padding:7px 10px;display:flex;gap:6px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
 .tbar::-webkit-scrollbar{display:none}
 .tp{display:inline-flex;align-items:center;padding:6px 14px;border-radius:16px;font-size:clamp(12px,3vw,14px);font-weight:500;cursor:pointer;border:1.5px solid;white-space:nowrap;flex-shrink:0}
@@ -46,15 +46,15 @@ header{background:var(--ink);color:#fff;padding:10px 12px 8px;flex-shrink:0}
 .tp.dead{color:var(--red)!important}
 .tp.act{background:var(--gold)!important;border-color:var(--gold)!important;color:var(--ink)!important}
 
-/* ── CANVAS ── */
+/* CANVAS */
 #cwrap{flex:1;overflow:hidden;position:relative;background:var(--cream);cursor:grab;touch-action:none}
 #cwrap.grabbing{cursor:grabbing}
 #mover{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
 #lsvg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
 
-/* ── NODES — large on mobile ── */
+/* NODES */
 .nd{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px}
-.npill{border-radius:10px;border:2px solid;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 8px;line-height:1.3;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;transition:transform .1s}
+.npill{border-radius:10px;border:2px solid;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 8px;line-height:1.3;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;transition:transform .1s,box-shadow .1s}
 .npill:active{transform:scale(0.95)}
 .npill.male{background:var(--blue-lt);border-color:var(--blue)}
 .npill.female{background:var(--pink-lt);border-color:var(--pink)}
@@ -65,6 +65,7 @@ header{background:var(--ink);color:#fff;padding:10px 12px 8px;flex-shrink:0}
 .npill.other .nname{color:var(--gray-dk)}
 .npill.dead .nname{color:var(--red)!important}
 .nage{color:var(--muted);margin-top:2px}
+.npill.highlight{box-shadow:0 0 0 4px var(--gold),0 2px 12px rgba(0,0,0,0.2)!important}
 .xbtn{border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;pointer-events:auto;cursor:pointer;flex-shrink:0;color:var(--muted)}
 .xbtn.hide{visibility:hidden}
 
@@ -74,7 +75,7 @@ header{background:var(--ink);color:#fff;padding:10px 12px 8px;flex-shrink:0}
 .ftbtn.act{background:var(--ink);color:#fff}
 
 /* Search */
-.sbar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.97);border-radius:20px;padding:8px 16px;border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,0.12);z-index:40;width:calc(100% - 32px);max-width:300px;pointer-events:auto}
+.sbar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.97);border-radius:20px;padding:8px 16px;border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,0.12);z-index:40;width:calc(100% - 32px);max-width:320px;pointer-events:auto}
 .sbar input{border:none;outline:none;font-size:clamp(13px,3vw,15px);flex:1;background:transparent;font-family:'DM Sans',sans-serif}
 
 /* Profile panel */
@@ -124,17 +125,19 @@ header{background:var(--ink);color:#fff;padding:10px 12px 8px;flex-shrink:0}
 <body>
 <header>
   <div class="hrow1">
-    <div class="logo"><h1>Ratanshi Dada (Dhrangadhra) Family</h1></div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(16px,4.5vw,22px);font-weight:700;color:#fff;line-height:1.2;flex:1">Ratanshi Dada (Dhrangadhra) Family</h1>
     <div class="hbtns">
       <button class="hbtn act" id="bv" onclick="setOri('v')">&#8597; Top</button>
       <button class="hbtn" id="bh" onclick="setOri('h')">&#8596; Side</button>
       <button class="hbtn" onclick="resetView()">Centre</button>
-      <button class="hbtn pdf" onclick="openPDF()">&#128209; Rituals</button>
+      <button class="hbtn pdf" id="pdfbtn" onclick="openPDF()">&#128209; Rituals</button>
     </div>
   </div>
   <div class="namah-row">&#x1F649; Shree Bahuchar Matay Namah:</div>
-  <div class="loc-row">&#128205; XFV6+WWC, Dholidhar, Dhrangadhra, Gujarat 363310</div>
-  <div class="breadcrumb" id="breadcrumb"></div>
+  <div class="loc-row" onclick="openMap()" title="Open in Google Maps">
+    &#128205; XFV6+WWC, Dholidhar, Dhrangadhra, Gujarat 363310
+  </div>
+  <div class="bc" id="bc"></div>
 </header>
 
 <div class="tbar" id="tabs"></div>
@@ -147,7 +150,7 @@ header{background:var(--ink);color:#fff;padding:10px 12px 8px;flex-shrink:0}
     <button class="ftbtn" id="tBack" style="display:none" onclick="clearDesc()">&#10005; Full</button>
   </div>
   <div class="sbar">
-    <input id="srch" placeholder="Search name or city..." oninput="doSearch(this.value)">
+    <input id="srch" placeholder="Search name or city..." oninput="doSearch(this.value)" autocomplete="off">
     <span style="font-size:17px;color:#bbb;cursor:pointer;display:none" id="sclr" onclick="clearSearch()">&#10005;</span>
   </div>
 </div>
@@ -176,24 +179,25 @@ const FD={"individuals":{"I1":{"id":"I1","name":"VIJAY VORA","sex":"M","deceased
 
 const P=FD.individuals, FM=FD.families;
 const PIN='1234';
+var PDFURL=''; // set when PDF link received
 let isAdmin=false, ori='v', activeRoot=null, collapsed=new Set(), curId=null;
 let filter='all', descRoot=null;
 
-// Node size — BIG on mobile for readability
 const mob=window.innerWidth<=640;
-const NW=mob?140:114, NH=mob?64:54, HG=mob?28:22, VG=mob?96:80;
+const NW=mob?138:114, NH=mob?64:54, HG=mob?28:22, VG=mob?96:80;
 const NFS=mob?13:11, NFSA=mob?10:9;
 
-let tx=60, ty=40, sc=1;
-let dragging=false, sx=0, sy=0, stx=0, sty=0, didDrag=false;
-let pinching=false, pd=0, psc=1, ptx=0, pty=0, pmx=0, pmy=0;
+let tx=60,ty=40,sc=1;
+let dragging=false,sx=0,sy=0,stx=0,sty=0,didDrag=false;
+let pinching=false,pd=0,psc=1,ptx=0,pty=0,pmx=0,pmy=0;
 
 const cwrap=document.getElementById('cwrap');
 const mover=document.getElementById('mover');
+var nodePositions={}; // id -> {x,y} in mover coords
 
 function applyT(){ mover.style.transform='translate('+tx+'px,'+ty+'px) scale('+sc+')'; }
 
-// Mouse pan
+// Mouse
 cwrap.addEventListener('mousedown',function(e){
   if(e.target.closest('.ftbar,.sbar,.hbtns,.xbtn')) return;
   dragging=true; didDrag=false; sx=e.clientX; sy=e.clientY; stx=tx; sty=ty;
@@ -208,13 +212,13 @@ window.addEventListener('mousemove',function(e){
 window.addEventListener('mouseup',function(){ dragging=false; cwrap.classList.remove('grabbing'); },false);
 cwrap.addEventListener('wheel',function(e){
   e.preventDefault();
-  var f=e.deltaY<0?1.1:0.91, r=cwrap.getBoundingClientRect();
-  var ox=e.clientX-r.left, oy=e.clientY-r.top;
+  var f=e.deltaY<0?1.1:0.91,r=cwrap.getBoundingClientRect();
+  var ox=e.clientX-r.left,oy=e.clientY-r.top;
   var ns=Math.min(5,Math.max(0.05,sc*f));
   tx=ox-(ox-tx)*(ns/sc); ty=oy-(oy-ty)*(ns/sc); sc=ns; applyT();
 },{passive:false});
 
-// Touch pan + pinch
+// Touch
 cwrap.addEventListener('touchstart',function(e){
   if(e.target.closest('.ftbar,.sbar,.hbtns,.tbar,.xbtn')) return;
   var ts=e.touches;
@@ -231,7 +235,7 @@ cwrap.addEventListener('touchstart',function(e){
 cwrap.addEventListener('touchmove',function(e){
   var ts=e.touches;
   if(ts.length===1&&dragging){
-    var dx=ts[0].clientX-sx, dy=ts[0].clientY-sy;
+    var dx=ts[0].clientX-sx,dy=ts[0].clientY-sy;
     if(Math.abs(dx)>3||Math.abs(dy)>3) didDrag=true;
     tx=stx+dx; ty=sty+dy; applyT();
   } else if(ts.length===2&&pinching){
@@ -248,27 +252,35 @@ cwrap.addEventListener('touchend',function(e){
 
 function resetView(){
   setTimeout(function(){
-    var cw=parseInt(mover.style.width)||400, ch=parseInt(mover.style.height)||400;
-    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
-    // On mobile: zoom to show top 3 generations nicely
-    if(mob){
-      sc=Math.min((ww-20)/cw, 1.0);
-      sc=Math.max(0.3, Math.min(0.9, sc));
-    } else {
-      sc=Math.min(1,(ww-40)/cw,(wh-60)/ch);
-      sc=Math.max(0.05,Math.min(1.5,sc));
-    }
+    var cw=parseInt(mover.style.width)||400,ch=parseInt(mover.style.height)||400;
+    var ww=cwrap.clientWidth,wh=cwrap.clientHeight;
+    sc=Math.min(1,(ww-40)/cw,(wh-60)/ch);
+    sc=Math.max(0.05,Math.min(1.5,sc));
     tx=(ww-cw*sc)/2; ty=30; applyT();
   },80);
+}
+
+// Centre view on a specific node
+function centreOn(id){
+  var pos=nodePositions[id]; if(!pos) return;
+  var ww=cwrap.clientWidth,wh=cwrap.clientHeight;
+  // Keep current scale, just pan to centre
+  tx=(ww/2)-(pos.x+NW/2)*sc;
+  ty=(wh/2)-(pos.y+NH/2)*sc;
+  applyT();
+  // Highlight
+  document.querySelectorAll('.npill').forEach(function(el){ el.classList.remove('highlight'); });
+  var el=document.querySelector('.npill[data-id="'+id+'"]');
+  if(el) el.classList.add('highlight');
 }
 
 function sexCls(p){ return p.sex==='F'?'female':p.sex==='M'?'male':'other'; }
 function ini(n){ var w=n.trim().split(/\s+/); return w.length>=2?(w[0][0]+w[w.length-1][0]).toUpperCase():n.slice(0,2).toUpperCase(); }
 function gl(d){ return ['Ancestor','Gen 1','Gen 2','Gen 3','Gen 4','Gen 5','Gen 6','Gen 7','Gen 8','Gen 9','Gen 10','Gen 11'][d]||'Gen '+d; }
 
-// Breadcrumb — only shows when person tapped
+// Breadcrumb
 function getTrail(id){
-  var trail=[], seen=new Set(), cur=id;
+  var trail=[],seen=new Set(),cur=id;
   while(cur&&!seen.has(cur)){
     seen.add(cur); trail.push(cur);
     var p=P[cur]; if(!p||!p.parents||!p.parents.length) break;
@@ -278,27 +290,35 @@ function getTrail(id){
 }
 function showBreadcrumb(id){
   var trail=getTrail(id);
-  var bc=document.getElementById('breadcrumb');
+  var bc=document.getElementById('bc');
   if(!trail.length){ bc.classList.remove('show'); return; }
   var html='';
   trail.forEach(function(tid,i){
     var p=P[tid]; if(!p) return;
-    html+='<span class="bci" style="color:'+(p.deceased?'#ffaaaa':'rgba(255,255,255,0.95)')+';font-weight:'+(i===0?'600':'400')+'" onclick="closePanel();showProfile(\''+tid+'\')" title="'+gl(p.depth)+'">'+p.name+'</span>';
+    html+='<span class="bci" style="color:'+(p.deceased?'#ffaaaa':'rgba(255,255,255,0.95)')+';font-weight:'+(i===0?'600':'400')+'" onclick="closePanel();centreOn(\''+tid+'\');showProfile(\''+tid+'\')" title="'+gl(p.depth)+'">'+p.name+'</span>';
     if(i<trail.length-1) html+='<span class="bcs">&#10230;</span>';
   });
   bc.innerHTML=html; bc.classList.add('show');
 }
 
-// Desc cache
+// Desc cache — FIXED: use iterative check to avoid stack overflow
 var DC={};
 function clearCache(){ DC={}; }
+
 function isDescOf(id,anc){
-  if(id===anc) return true;
+  // Iterative BFS upward through parents
   var key=id+'|'+anc;
   if(key in DC) return DC[key];
-  var p=P[id]; if(!p||!p.parents||!p.parents.length){ DC[key]=false; return false; }
-  var r=p.parents.some(function(pid){ return isDescOf(pid,anc); });
-  DC[key]=r; return r;
+  var queue=[id], seen=new Set();
+  while(queue.length){
+    var cur=queue.shift();
+    if(cur===anc){ DC[key]=true; return true; }
+    if(seen.has(cur)) continue;
+    seen.add(cur);
+    var p=P[cur];
+    if(p&&p.parents) p.parents.forEach(function(pid){ if(!seen.has(pid)) queue.push(pid); });
+  }
+  DC[key]=false; return false;
 }
 
 function isVis(p){
@@ -319,7 +339,7 @@ function leafW(id,vis){
 }
 
 function placeNodes(rootId){
-  var nodes=[], placed=new Set();
+  var nodes=[],placed=new Set();
   function place(id,x,y,vis){
     vis=vis||new Set();
     if(vis.has(id)) return;
@@ -350,30 +370,43 @@ function placeNodes(rootId){
 }
 
 function renderTree(){
+  nodePositions={};
   Array.from(mover.children).forEach(function(c){ if(c.id!=='lsvg') c.remove(); });
   var lsvg=document.getElementById('lsvg'); lsvg.innerHTML='';
   var root=descRoot||activeRoot; if(!root) return;
 
-  var allVis=Object.values(P).filter(function(p){ return isVis(p); });
-  if(allVis.length===0){
-    mover.style.width='300px'; mover.style.height='120px';
-    var msg=document.createElement('div');
-    msg.style.cssText='padding:40px;text-align:center;color:#888;font-size:15px;width:300px';
-    msg.textContent='No members found. Try "All" filter.';
-    mover.appendChild(msg); return;
+  // Check if any living persons are descendants of root
+  if(filter==='live'){
+    var anyLiving=Object.values(P).some(function(p){ return isVis(p); });
+    if(!anyLiving){
+      mover.style.width='320px'; mover.style.height='120px';
+      var msg=document.createElement('div');
+      msg.style.cssText='padding:40px 20px;text-align:center;color:#888;font-size:15px;width:320px';
+      msg.innerHTML='No living members in this branch.<br><small>Try "All" or select another tab.</small>';
+      mover.appendChild(msg); return;
+    }
   }
 
   var nodes=placeNodes(root);
   if(!nodes.length){ mover.style.width='300px'; mover.style.height='120px'; return; }
 
   var mnX=1e9,mnY=1e9,mxX=-1e9,mxY=-1e9;
-  nodes.forEach(function(n){ mnX=Math.min(mnX,n.x); mnY=Math.min(mnY,n.y); mxX=Math.max(mxX,(n.spX||n.x)+NW); mxY=Math.max(mxY,n.y+NH); });
-  var pad=80, W=mxX-mnX+pad*2, H=mxY-mnY+pad*2;
+  nodes.forEach(function(n){
+    mnX=Math.min(mnX,n.x); mnY=Math.min(mnY,n.y);
+    mxX=Math.max(mxX,(n.spX||n.x)+NW); mxY=Math.max(mxY,n.y+NH);
+  });
+  var pad=80,W=mxX-mnX+pad*2,H=mxY-mnY+pad*2;
   lsvg.setAttribute('width',W); lsvg.setAttribute('height',H);
   mover.style.width=W+'px'; mover.style.height=H+'px';
 
+  // Compute max depth among VISIBLE nodes
   var maxDep=0;
   nodes.forEach(function(n){ var p=P[n.id]; if(p&&p.depth>maxDep) maxDep=p.depth; });
+
+  // Store positions for centreOn
+  nodes.forEach(function(n){
+    nodePositions[n.id]={x:n.x-mnX+pad, y:n.y-mnY+pad};
+  });
 
   var parNode={};
   nodes.forEach(function(n){
@@ -382,12 +415,12 @@ function renderTree(){
     (p.children||[]).filter(function(c){ return isVis(P[c]); }).forEach(function(cid){ parNode[cid]=n; });
   });
 
-  // Connector lines
+  // Lines
   nodes.forEach(function(n){
     var par=parNode[n.id]; if(!par||n.isSp) return;
-    var cx=n.x-mnX+pad+NW/2, cy=n.y-mnY+pad;
+    var cx=n.x-mnX+pad+NW/2,cy=n.y-mnY+pad;
     var pmx2=par.spX?((par.x-mnX+pad+NW/2)+(par.spX-mnX+pad+NW/2))/2:par.x-mnX+pad+NW/2;
-    var pby=par.y-mnY+pad+NH, my=pby+VG*0.45;
+    var pby=par.y-mnY+pad+NH,my=pby+VG*0.45;
     var path=document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d','M'+pmx2+' '+pby+' L'+pmx2+' '+my+' L'+cx+' '+my+' L'+cx+' '+cy);
     path.setAttribute('fill','none'); path.setAttribute('stroke','#C8B89A');
@@ -398,7 +431,7 @@ function renderTree(){
   // Spouse lines
   nodes.forEach(function(n){
     if(!n.spX) return;
-    var x1=n.x-mnX+pad+NW, y1=n.y-mnY+pad+NH/2, x2=n.spX-mnX+pad;
+    var x1=n.x-mnX+pad+NW,y1=n.y-mnY+pad+NH/2,x2=n.spX-mnX+pad;
     var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
     ln.setAttribute('x1',x1); ln.setAttribute('y1',y1); ln.setAttribute('x2',x2); ln.setAttribute('y2',y1);
     ln.setAttribute('stroke','#C8B89A'); ln.setAttribute('stroke-width','2'); ln.setAttribute('stroke-dasharray','5 3');
@@ -412,8 +445,18 @@ function renderTree(){
   // Nodes
   nodes.forEach(function(n){
     var p=P[n.id]; if(!p) return;
-    var nx=n.x-mnX+pad, ny=n.y-mnY+pad;
-    var cls=sexCls(p), isLeaf=(p.depth===maxDep);
+    var nx=n.x-mnX+pad,ny=n.y-mnY+pad;
+    var cls=sexCls(p);
+    // Show age ONLY on last generation
+    var isLeaf=(p.depth===maxDep);
+    var ageHtml='';
+    if(isLeaf&&p.birth){
+      var by=parseInt(p.birth.replace(/\D/g,'').slice(-4));
+      if(!isNaN(by)){
+        var age=p.deceased&&p.death?parseInt(p.death.replace(/\D/g,'').slice(-4))-by:2026-by;
+        if(age>0&&age<130) ageHtml='<span class="nage" style="font-size:'+NFSA+'px">'+age+' yrs</span>';
+      }
+    }
 
     var div=document.createElement('div');
     div.className='nd';
@@ -423,15 +466,6 @@ function renderTree(){
     pill.className='npill '+cls+(p.deceased?' dead':'');
     pill.dataset.id=p.id;
     pill.style.cssText='width:'+NW+'px;min-height:'+NH+'px;font-size:'+NFS+'px';
-
-    var ageHtml='';
-    if(isLeaf&&p.birth){
-      var by=parseInt(p.birth.replace(/\D/g,'').slice(-4));
-      if(!isNaN(by)){
-        var age=p.deceased&&p.death?parseInt(p.death.replace(/\D/g,'').slice(-4))-by:2026-by;
-        if(age>0&&age<130) ageHtml='<span class="nage" style="font-size:'+NFSA+'px">'+age+' yrs</span>';
-      }
-    }
     pill.innerHTML='<span class="nname">'+p.name+'</span>'+ageHtml;
     pill.onclick=function(e){ if(didDrag) return; e.stopPropagation(); showProfile(p.id); };
     div.appendChild(pill);
@@ -484,7 +518,7 @@ function clearDesc(){
   renderTree(); resetView();
 }
 
-// TABS: Gen 3 only — click shows ONLY that person's descendants
+// TABS: Gen 3
 function buildTabs(){
   var bar=document.getElementById('tabs'); bar.innerHTML='';
   var g3=Object.values(P).filter(function(p){ return p.depth===3; })
@@ -504,29 +538,25 @@ function buildTabs(){
     };
     bar.appendChild(d);
   });
-  // Default: show full tree — start at Ratanshi, ALL collapsed except first 2 levels
+  // Default: full tree, collapse gen 4+
   var root=Object.values(P).find(function(p){ return p.depth===0; });
   if(root){
     descRoot=null; activeRoot=root.id;
-    // Collapse everyone at depth >= 4 to start compact
-    Object.values(P).forEach(function(p){
-      if(p.depth>=4) collapsed.add(p.id);
-    });
+    Object.values(P).forEach(function(p){ if(p.depth>=4) collapsed.add(p.id); });
     renderTree();
-    // Then zoom to show nicely
     setTimeout(function(){
-      var ww=cwrap.clientWidth;
-      sc=mob?0.55:0.4;
-      tx=(ww-(parseInt(mover.style.width)||800)*sc)/2;
-      ty=30; applyT();
-    },100);
+      var cw=parseInt(mover.style.width)||800;
+      sc=mob?0.5:0.35;
+      tx=(cwrap.clientWidth-cw*sc)/2; ty=30; applyT();
+    },120);
   }
 }
 
 function showProfile(id){
   var p=P[id]; if(!p) return; curId=id;
   showBreadcrumb(id);
-  var cls=sexCls(p), dead=p.deceased;
+  centreOn(id);
+  var cls=sexCls(p),dead=p.deceased;
   document.getElementById('ph').innerHTML=
     '<div class="pav '+cls+(dead?' dead':'')+'">'+ini(p.name)+'</div>'+
     '<div style="flex:1">'+
@@ -568,18 +598,13 @@ function doEdit(){
   var p=P[curId]; if(!p) return;
   document.getElementById('pb').innerHTML='<div style="padding:2px 0">'+
     '<label class="flbl">Full Name</label><input class="inp" id="en" value="'+p.name+'">'+
-    '<div style="display:flex;gap:8px">'+
-    '<div style="flex:1"><label class="flbl">Gender</label><select class="sel" id="es"><option value="M" '+(p.sex==='M'?'selected':'')+'>Male</option><option value="F" '+(p.sex==='F'?'selected':'')+'>Female</option><option value="Other" '+(p.sex==='Other'?'selected':'')+'>Other</option></select></div>'+
-    '<div style="flex:1"><label class="flbl">Status</label><select class="sel" id="ed"><option value="0" '+(!p.deceased?'selected':'')+'>Living</option><option value="1" '+(p.deceased?'selected':'')+'>Deceased</option></select></div>'+
-    '</div>'+
-    '<div style="display:flex;gap:8px">'+
-    '<div style="flex:1"><label class="flbl">Birth Year</label><input class="inp" id="eb" value="'+p.birth+'" placeholder="1952"></div>'+
-    '<div style="flex:1"><label class="flbl">Death Year</label><input class="inp" id="edd" value="'+p.death+'" placeholder="2010"></div>'+
-    '</div>'+
+    '<div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">Gender</label><select class="sel" id="es"><option value="M" '+(p.sex==='M'?'selected':'')+'>Male</option><option value="F" '+(p.sex==='F'?'selected':'')+'>Female</option><option value="Other" '+(p.sex==='Other'?'selected':'')+'>Other</option></select></div>'+
+    '<div style="flex:1"><label class="flbl">Status</label><select class="sel" id="ed"><option value="0" '+(!p.deceased?'selected':'')+'>Living</option><option value="1" '+(p.deceased?'selected':'')+'>Deceased</option></select></div></div>'+
+    '<div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">Birth Year</label><input class="inp" id="eb" value="'+p.birth+'" placeholder="1952"></div>'+
+    '<div style="flex:1"><label class="flbl">Death Year</label><input class="inp" id="edd" value="'+p.death+'" placeholder="2010"></div></div>'+
     '<label class="flbl">City</label><input class="inp" id="ec" value="'+p.city+'" placeholder="Vadodara">'+
     '<label class="flbl">Notes</label><input class="inp" id="enote" value="'+(p.note||'')+'">'+
-    '<button class="svbtn" onclick="saveEdit()">Save Changes</button>'+
-    '</div>';
+    '<button class="svbtn" onclick="saveEdit()">Save Changes</button></div>';
 }
 function saveEdit(){
   var p=P[curId]; if(!p) return;
@@ -593,23 +618,33 @@ function saveEdit(){
   closePanel(); renderTree(); setTimeout(function(){ showProfile(curId); },80);
 }
 
+// Search — centre on first result
 function doSearch(q){
   q=q.trim().toLowerCase();
   document.getElementById('sclr').style.display=q?'block':'none';
+  if(!q){ document.querySelectorAll('.npill').forEach(function(el){ el.style.opacity='1'; el.classList.remove('highlight'); }); return; }
+  var first=null;
   document.querySelectorAll('.npill').forEach(function(el){
     var p=P[el.dataset.id]; if(!p) return;
     var hit=p.name.toLowerCase().includes(q)||(p.city&&p.city.toLowerCase().includes(q));
-    el.style.opacity=(!q||hit)?'1':'0.1';
-    el.style.outline=hit&&q?'2.5px solid #C8A96A':'none';
+    el.style.opacity=hit?'1':'0.1';
+    el.classList.toggle('highlight',hit);
+    if(hit&&!first) first=el.dataset.id;
   });
+  if(first) centreOn(first);
 }
 function clearSearch(){
   document.getElementById('srch').value=''; document.getElementById('sclr').style.display='none';
-  document.querySelectorAll('.npill').forEach(function(el){ el.style.opacity='1'; el.style.outline='none'; });
+  document.querySelectorAll('.npill').forEach(function(el){ el.style.opacity='1'; el.classList.remove('highlight'); });
+}
+
+function openMap(){
+  window.open('https://www.google.com/maps/search/?api=1&query=Dholidhar+Dhrangadhra+Gujarat+363310','_blank');
 }
 
 function openPDF(){
-  alert('Upload your Family Ritual PDF to the GitHub repo and share the link — I will add it here!');
+  if(PDFURL){ window.open(PDFURL,'_blank'); }
+  else { alert('PDF link coming soon — share the link with Vijay to add it here!'); }
 }
 
 buildTabs();
