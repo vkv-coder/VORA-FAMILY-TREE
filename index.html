@@ -132,6 +132,7 @@ header{background:var(--ink);color:#fff;padding:10px 12px 7px;flex-shrink:0}
     <div class="phead" id="ph"></div>
     <div class="pbody" id="pb"></div>
     <button class="dbtn" onclick="showDescendants()">&#127807; View all descendants</button>
+    <button class="dbtn" id="addRelBtn" style="margin-top:4px" onclick="showAddRel()">&#43; Add Relative</button>
     <button class="ebtn" onclick="startEdit()">&#9998; Edit Details</button>
   </div>
 </div>
@@ -284,11 +285,16 @@ function isDescOf(id,anc){
 }
 
 // Visibility based on mode
+// For 'living': all nodes included in layout, but deceased rendered invisible
 function isVis(p){
   if(!p) return false;
-  if(mode==='living') return !p.deceased;
   if(mode==='desc') return p.id===descId || isDescOf(p.id,descId);
-  return true; // mode==='all'
+  return true; // 'all' and 'living' both include all for layout
+}
+function isShown(p){
+  if(!p) return false;
+  if(mode==='living') return !p.deceased;
+  return true;
 }
 
 // Collapsed nodes
@@ -376,12 +382,16 @@ function renderTree(rootId){
   // Lines
   nodes.forEach(function(n){
     var par=parNode[n.id]; if(!par||n.isSp) return;
+    var np=P[n.id], pp=P[par.id];
+    // In living mode, hide lines between two deceased nodes
+    var bothDead=mode==='living'&&np&&np.deceased&&pp&&pp.deceased;
     var cx=n.x-mnX+pad+NW/2,cy=n.y-mnY+pad;
     var pmid=par.spX?((par.x-mnX+pad+NW/2)+(par.spX-mnX+pad+NW/2))/2:par.x-mnX+pad+NW/2;
     var pby=par.y-mnY+pad+NH,my=pby+VG*0.45;
     var path=document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d','M'+pmid+' '+pby+' L'+pmid+' '+my+' L'+cx+' '+my+' L'+cx+' '+cy);
-    path.setAttribute('fill','none'); path.setAttribute('stroke','#C8B89A');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke',bothDead?'rgba(200,184,154,0.15)':'#C8B89A');
     path.setAttribute('stroke-width','1.8'); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
     lsvg.appendChild(path);
   });
@@ -416,7 +426,9 @@ function renderTree(rootId){
     div.className='nd';
     div.style.cssText='left:'+pos.nx+'px;top:'+pos.ny+'px;width:'+NW+'px;position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px';
     var pill=document.createElement('div');
+    var hidden=(mode==='living'&&p.deceased);
     pill.className='npill '+cls+(p.deceased?' dead':'');
+    if(hidden){ pill.style.opacity='0'; pill.style.pointerEvents='none'; }
     pill.dataset.id=p.id;
     pill.style.cssText='width:'+NW+'px;min-height:'+NH+'px;font-size:'+NFS+'px';
     pill.innerHTML='<span class="nname">'+p.name+'</span>'+ageHtml;
@@ -428,12 +440,64 @@ function renderTree(rootId){
     xb.style.cssText='width:'+(mob?24:20)+'px;height:'+(mob?24:20)+'px;font-size:'+(mob?14:12)+'px';
     xb.textContent=kids.length?(collapsed.has(p.id)?'+':'-'):'';
     if(kids.length){ xb.onclick=function(e){ e.stopPropagation(); if(collapsed.has(p.id)) collapsed.delete(p.id); else collapsed.add(p.id); renderTree(ROOT); }; }
+    if(hidden) xb.style.display='none';
     div.appendChild(xb);
     mover.appendChild(div);
   });
 }
 
 var ROOT='I19'; // Ratanshi
+
+function showAddRel(){
+  var p=P[curId]; if(!p) return;
+  document.getElementById('pb').innerHTML='<div style="padding:4px 0">'+
+    '<div style="font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Add relative to '+p.name+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:8px">'+
+    addRelBtn('&#128104;&#8205;&#128105; Add Spouse/Partner','spouse',curId)+
+    addRelBtn('&#128118; Add Son','son',curId)+
+    addRelBtn('&#128119; Add Daughter','daughter',curId)+
+    addRelBtn('&#8593; Add Father','father',curId)+
+    addRelBtn('&#8593; Add Mother','mother',curId)+
+    '</div>'+
+    '<div style="margin-top:14px;font-size:11px;color:var(--muted)">After adding, use Edit to fill in details</div>'+
+    '</div>';
+}
+function addRelBtn(label,type,pid){
+  return '<button onclick="addRel(''+type+'',''+pid+'')" style="padding:10px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;color:var(--ink)">'+label+'</button>';
+}
+function addRel(type,pid){
+  var p=P[pid]; if(!p) return;
+  // Generate new ID
+  var ids=Object.keys(P).map(function(k){ return parseInt(k.slice(1)); });
+  var newId='I'+(Math.max.apply(null,ids)+1);
+  var newName=prompt('Enter name:');
+  if(!newName||!newName.trim()) return;
+  newName=newName.trim();
+  var newPerson={id:newId,name:newName,sex:'M',deceased:false,birth:'',death:'',city:'',note:'',depth:0,children:[],spouses:[],parents:[]};
+  if(type==='spouse'){
+    newPerson.sex=p.sex==='M'?'F':'M';
+    newPerson.depth=p.depth;
+    p.spouses=p.spouses||[]; p.spouses.push(newId);
+    newPerson.spouses=[pid];
+    PM[newId]=PM[pid]||[];
+  } else if(type==='son'||type==='daughter'){
+    newPerson.sex=type==='son'?'M':'F';
+    newPerson.depth=p.depth+1;
+    p.children=p.children||[]; p.children.push(newId);
+    newPerson.parents=[pid];
+    PM[newId]=[pid];
+  } else if(type==='father'||type==='mother'){
+    newPerson.sex=type==='father'?'M':'F';
+    newPerson.depth=p.depth-1;
+    newPerson.children=[pid];
+    p.parents=p.parents||[]; p.parents.push(newId);
+    PM[pid]=PM[pid]||[]; PM[pid].push(newId);
+  }
+  P[newId]=newPerson;
+  closePanel();
+  renderTree(ROOT);
+  setTimeout(function(){ showProfile(newId); },100);
+}
 
 function initView(){
   collapsed=new Set();
@@ -477,15 +541,21 @@ function showAll(){
 
 function showLiving(){
   mode='living'; descId=null; descMemo={};
-  collapsed=new Set();
+  collapsed=new Set(); // expand everything
   document.getElementById('tAll').classList.remove('act');
   document.getElementById('tLive').classList.add('act');
   document.getElementById('tBack').style.display='block';
   document.getElementById('tAll').style.display='none';
   document.getElementById('tLive').style.display='none';
-  // For living view, render from each living person directly
-  // Build a synthetic flat render: show all living people as a list grouped by depth
-  renderLiving();
+  // Render tree normally - living nodes show, deceased nodes invisible but keep layout
+  renderTree(ROOT);
+  setTimeout(function(){
+    var cw=parseInt(mover.style.width)||800;
+    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
+    sc=Math.min(1,(ww-40)/cw,(wh-60)/parseInt(mover.style.height||400));
+    sc=Math.max(0.05,Math.min(1.5,sc));
+    tx=(ww-cw*sc)/2; ty=30; applyT();
+  },120);
 }
 
 function renderLiving(){
