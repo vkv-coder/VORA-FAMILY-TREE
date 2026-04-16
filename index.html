@@ -148,15 +148,18 @@ margin-top:4px;
 
 <script>
 
-/* ===== SAFE DATA LOAD ===== */
+/* ===== SAFE DATA LOAD (FINAL CLEAN) ===== */
 let IND = {}
 
-if(typeof FD !== "undefined" && FD.individuals){
-  IND = FD.individuals
-}else{
-  console.error("FD data not found")
+if (typeof FD !== "undefined") {
+  if (FD.individuals) {
+    IND = FD.individuals
+  } else {
+    IND = FD
+  }
+} else {
+  console.error("FD not defined")
 }
-
 /* ===== STATE ===== */
 let mode="all"
 let scale=1, x=0, y=0
