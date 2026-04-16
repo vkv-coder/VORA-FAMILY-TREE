@@ -15,47 +15,47 @@ justify-content:space-between;
 align-items:center;
 background:#111;
 color:#fff;
-padding:10px 15px;
+padding:18px 20px;
 }
 
 /* LEFT */
 .leftTitle{
 font-weight:bold;
-font-size:14px;
+font-size:18px;
 }
 
 /* CENTER */
 .centerTitle{
 text-align:center;
 flex:1;
-font-size:15px;
+font-size:20px;
 color:#d4af37;
 }
 
 /* RIGHT */
 .rightBtns button{
-margin-left:6px;
-padding:6px 10px;
+margin-left:8px;
+padding:10px 14px;
 border:none;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
+font-size:14px;
 }
 
 /* BIG BUTTON */
 .bigBtn{
-font-size:13px;
 background:#f5f5f5;
 }
 
 /* MAP BUTTON */
 .mapBtn{
-background:#fff3cd;
+background:#ffe8a1;
 font-weight:bold;
 }
 
 /* ===== CANVAS ===== */
 #cw{
-height:calc(100vh - 60px);
+height:calc(100vh - 90px);
 overflow:hidden;
 position:relative;
 cursor:grab;
@@ -69,12 +69,12 @@ transform-origin:0 0;
 /* ===== NODE ===== */
 .node{
 position:absolute;
-padding:6px 10px;
-border-radius:8px;
+padding:8px 12px;
+border-radius:10px;
 border:2px solid #333;
 background:#fff;
-font-size:12px;
-min-width:80px;
+font-size:14px;
+min-width:100px;
 text-align:center;
 }
 
@@ -83,34 +83,34 @@ color:red;
 }
 
 .smallStar{
-font-size:10px;
+font-size:11px;
 color:#999;
 }
 
 /* ===== TOOLBAR ===== */
 .toolbar{
 position:absolute;
-top:10px;
+top:15px;
 left:50%;
 transform:translateX(-50%);
 background:#fff;
-padding:6px;
-border-radius:10px;
+padding:8px;
+border-radius:12px;
 box-shadow:0 2px 10px rgba(0,0,0,0.2);
 }
 
 /* ===== SEARCH ===== */
 .search{
 position:absolute;
-bottom:10px;
+bottom:15px;
 left:50%;
 transform:translateX(-50%);
 }
 
 /* ===== ARROW ===== */
 .arrow{
-font-size:16px;
-margin-top:3px;
+font-size:18px;
+margin-top:4px;
 }
 </style>
 </head>
@@ -127,7 +127,7 @@ margin-top:3px;
 <button class="bigBtn">Ritual</button>
 <button class="bigBtn">Preamble</button>
 <button class="mapBtn" onclick="window.open('https://maps.google.com/?q=Dholidhar Dhrangadhra')">
-🗺 Kuldevi
+📍 Kuldevi Location
 </button>
 </div>
 
@@ -148,9 +148,16 @@ margin-top:3px;
 
 <script>
 
-/* ===== USE YOUR FULL DATA HERE ===== */
-const IND = FD.individuals   // IMPORTANT
+/* ===== SAFE DATA LOAD ===== */
+let IND = {}
 
+if(typeof FD !== "undefined" && FD.individuals){
+  IND = FD.individuals
+}else{
+  console.error("FD data not found")
+}
+
+/* ===== STATE ===== */
 let mode="all"
 let scale=1, x=0, y=0
 
@@ -165,24 +172,29 @@ function render(){
 const mv=document.getElementById("mv")
 mv.innerHTML=""
 
-/* SHOW ALL MEMBERS CLEARLY */
+/* SAFETY */
+if(!IND || Object.keys(IND).length===0){
+mv.innerHTML="<h3 style='padding:20px'>No Data Loaded</h3>"
+return
+}
+
 Object.values(IND).forEach((p,i)=>{
 
 let div=document.createElement("div")
 div.className="node"
 
-/* ===== LIVING LOGIC (CORRECT) ===== */
+/* ===== LIVING MODE ===== */
 if(mode==="live" && p.deceased){
 div.innerHTML="*"
 div.classList.add("smallStar")
 }else{
-div.innerHTML=p.name
+div.innerHTML=p.name || "No Name"
 if(p.deceased) div.classList.add("dead")
 }
 
-/* ===== POSITION (KEEP SPREAD — NOT FORCED FIT) ===== */
-div.style.left=(i*140)+"px"
-div.style.top=(p.depth*90)+"px"
+/* ===== POSITION ===== */
+div.style.left=(i*160)+"px"
+div.style.top=((p.depth||0)*100)+"px"
 
 /* ===== ARROW ===== */
 if(p.children && p.children.length>0){
@@ -233,6 +245,7 @@ scale=Math.max(0.5,Math.min(2,scale))
 mv.style.transform=`translate(${x}px,${y}px) scale(${scale})`
 }
 
+/* INIT */
 render()
 
 </script>
