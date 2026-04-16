@@ -436,31 +436,28 @@ function renderTree(rootId){
 var ROOT='I19'; // Ratanshi
 
 function initView(){
-  // Collapse gen5+ so opening view shows readable 4 generations
   collapsed=new Set();
   Object.values(P).forEach(function(p){ if(p.depth>=5) collapsed.add(p.id); });
   renderTree(ROOT);
-  // Centre Ratanshi horizontally, show from top
   setTimeout(function(){
-    var cw=parseInt(mover.style.width)||800;
-    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
-    // Scale to show top 4 gens nicely
-    sc=mob?0.55:0.45;
-    // Centre Ratanshi box horizontally
+    var ww=cwrap.clientWidth;
+    sc=mob?0.55:0.5;
     var ratPos=nodePos[ROOT];
     if(ratPos){
-      tx=ww/2-(ratPos.nx+NW/2)*sc;
+      // Centre Ratanshi box on screen
+      tx=Math.round(ww/2-(ratPos.nx+NW/2)*sc);
     } else {
-      tx=(ww-cw*sc)/2;
+      tx=Math.round((ww-parseInt(mover.style.width||800)*sc)/2);
     }
-    ty=40; applyT();
-  },120);
+    ty=50; applyT();
+  },200);
 }
 
 function showAll(){
   mode='all'; descId=null; descMemo={};
+  // Full tree: collapse only gen6+ so more is visible
   collapsed=new Set();
-  Object.values(P).forEach(function(p){ if(p.depth>=5) collapsed.add(p.id); });
+  Object.values(P).forEach(function(p){ if(p.depth>=6) collapsed.add(p.id); });
   document.getElementById('tAll').classList.add('act');
   document.getElementById('tLive').classList.remove('act');
   document.getElementById('tBack').style.display='none';
@@ -470,28 +467,90 @@ function showAll(){
   setTimeout(function(){
     var ww=cwrap.clientWidth;
     var cw=parseInt(mover.style.width)||800;
-    sc=mob?0.55:0.45;
+    // Bigger scale — nodes readable, user can pan
+    sc=mob?0.7:0.6;
     var ratPos=nodePos[ROOT];
-    tx=ratPos?ww/2-(ratPos.nx+NW/2)*sc:(ww-cw*sc)/2;
-    ty=40; applyT();
+    tx=ratPos?Math.round(ww/2-(ratPos.nx+NW/2)*sc):Math.round((ww-cw*sc)/2);
+    ty=50; applyT();
   },120);
 }
 
 function showLiving(){
   mode='living'; descId=null; descMemo={};
-  collapsed=new Set(); // expand all for living
+  collapsed=new Set();
   document.getElementById('tAll').classList.remove('act');
   document.getElementById('tLive').classList.add('act');
   document.getElementById('tBack').style.display='block';
   document.getElementById('tAll').style.display='none';
   document.getElementById('tLive').style.display='none';
-  renderTree(ROOT);
+  // For living view, render from each living person directly
+  // Build a synthetic flat render: show all living people as a list grouped by depth
+  renderLiving();
+}
+
+function renderLiving(){
+  descMemo={}; nodePos={};
+  Array.from(mover.children).forEach(function(c){ if(c.id!=="lsvg") c.remove(); });
+  var lsvg=document.getElementById("lsvg"); lsvg.innerHTML="";
+
+  var living=Object.values(P).filter(function(p){ return !p.deceased; });
+  if(living.length===0){
+    mover.style.width="320px"; mover.style.height="130px";
+    var msg=document.createElement("div");
+    msg.style.cssText="padding:40px 16px;text-align:center;color:#888;font-size:14px;width:320px";
+    msg.textContent="No living members found.";
+    mover.appendChild(msg); return;
+  }
+
+  // Group by depth
+  var byDepth={};
+  living.forEach(function(p){
+    if(!byDepth[p.depth]) byDepth[p.depth]=[];
+    byDepth[p.depth].push(p);
+  });
+  var depths=Object.keys(byDepth).map(Number).sort(function(a,b){return a-b;});
+
+  var pad=40, rowH=NH+40, colW=NW+HG;
+  var maxPerRow=Math.max.apply(null,depths.map(function(d){return byDepth[d].length;}));
+  var W=maxPerRow*colW+pad*2;
+  var H=depths.length*rowH+pad*2;
+
+  lsvg.setAttribute("width",W); lsvg.setAttribute("height",H);
+  mover.style.width=W+"px"; mover.style.height=H+"px";
+
+  depths.forEach(function(d,di){
+    var row=byDepth[d];
+    var rowW=row.length*colW-HG;
+    var startX=(W-rowW)/2;
+    row.forEach(function(p,i){
+      var nx=startX+i*colW;
+      var ny=pad+di*rowH;
+      nodePos[p.id]={nx:nx,ny:ny};
+      var cls=sexCls(p);
+      var div=document.createElement("div");
+      div.className="nd";
+      div.style.cssText="left:"+nx+"px;top:"+ny+"px;width:"+NW+"px;position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px";
+      var pill=document.createElement("div");
+      pill.className="npill "+cls;
+      pill.dataset.id=p.id;
+      pill.style.cssText="width:"+NW+"px;min-height:"+NH+"px;font-size:"+NFS+"px";
+      var ageHtml="";
+      if(p.birth){
+        var by=parseInt(p.birth.replace(/\D/g,"").slice(-4));
+        if(!isNaN(by)){ var age=2026-by; if(age>0&&age<100) ageHtml="<span class=\"nage\" style=\"font-size:"+NFSA+"px\">"+age+" yrs</span>"; }
+      }
+      pill.innerHTML="<span class=\"nname\">"+p.name+"</span>"+ageHtml+(p.city?"<span class=\"nage\" style=\"font-size:"+NFSA+"px\">"+p.city+"</span>":"");
+      pill.onclick=function(e){ if(didDrag) return; e.stopPropagation(); showProfile(p.id); };
+      div.appendChild(pill);
+      mover.appendChild(div);
+    });
+  });
+
   setTimeout(function(){
-    var cw=parseInt(mover.style.width)||800;
     var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
-    sc=Math.min(1,(ww-40)/cw,(wh-60)/parseInt(mover.style.height||400));
-    sc=Math.max(0.05,Math.min(1.5,sc));
-    tx=(ww-cw*sc)/2; ty=30; applyT();
+    sc=Math.min(1,(ww-40)/W,(wh-60)/H);
+    sc=Math.max(0.08,Math.min(1.5,sc));
+    tx=(ww-W*sc)/2; ty=30; applyT();
   },120);
 }
 
@@ -589,34 +648,48 @@ function saveEdit(){
   closePanel(); renderTree(ROOT); setTimeout(function(){ showProfile(curId); },80);
 }
 
-// Search: type name -> show that person's descendants
+// Search: type name -> show full tree, highlight match, centre on it
+// Show 1 gen above + person + 1 gen below visible on screen
 function doSearch(q){
   q=q.trim().toLowerCase();
   document.getElementById('sclr').style.display=q?'block':'none';
-  if(!q){
-    // Restore all view
-    showAll(); return;
-  }
-  // Find matching people
+  if(!q){ showAll(); return; }
   var matches=Object.values(P).filter(function(p){
     return p.name.toLowerCase().includes(q)||(p.city&&p.city.toLowerCase().includes(q));
   });
   if(!matches.length) return;
-  // Show first match's descendants
   var first=matches[0];
-  mode='desc'; descId=first.id; descMemo={};
+  // Show full tree but ensure first match + parent + children are expanded
+  mode='all'; descId=null; descMemo={};
   collapsed=new Set();
+  Object.values(P).forEach(function(p){ if(p.depth>=5) collapsed.add(p.id); });
+  // Make sure parent and the person and children are NOT collapsed
+  collapsed.delete(first.id);
+  var pars=PM[first.id]||[];
+  pars.forEach(function(pid){ collapsed.delete(pid); });
   document.getElementById('tBack').style.display='block';
   document.getElementById('tAll').style.display='none';
   document.getElementById('tLive').style.display='none';
   renderTree(ROOT);
   setTimeout(function(){
-    centreOn(first.id);
+    // Scale so person + 1 above + 1 below fit on screen
+    var wh=cwrap.clientHeight, ww=cwrap.clientWidth;
+    sc=Math.min(1, wh/(NH*3+VG*2+100));
+    sc=Math.max(0.3, Math.min(1.2, sc));
+    // Centre on person
+    var pos=nodePos[first.id];
+    if(pos){
+      tx=Math.round(ww/2-(pos.nx+NW/2)*sc);
+      ty=Math.round(wh/2-(pos.ny+NH/2)*sc);
+      applyT();
+    }
     // Highlight all matches
     matches.forEach(function(p){
       var el=document.querySelector('.npill[data-id="'+p.id+'"]');
       if(el) el.classList.add('sel');
     });
+    // Show ancestor trail
+    showTrail(first.id);
   },150);
 }
 function clearSearch(){
