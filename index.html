@@ -2,49 +2,135 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Ratanshi Dada Family Tree</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+body { margin:0; font-family: Arial; overflow:hidden; background:#faf9f5 }
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#faf9f5;overflow:hidden}
+/* ===== HEADER ===== */
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#111;
+color:#fff;
+padding:10px 15px;
+}
 
-header{background:#111;color:#fff;text-align:center;padding:10px}
-.namah{color:#d4af37;font-size:14px}
-.loc{font-size:12px;cursor:pointer}
+/* LEFT */
+.leftTitle{
+font-weight:bold;
+font-size:14px;
+}
 
-#cw{height:calc(100vh - 80px);overflow:hidden;position:relative;cursor:grab}
-#mv{position:absolute;transform-origin:0 0}
+/* CENTER */
+.centerTitle{
+text-align:center;
+flex:1;
+font-size:15px;
+color:#d4af37;
+}
 
-.nd{position:absolute;text-align:center}
-.np{padding:6px 10px;border-radius:8px;border:2px solid #ccc;background:#fff}
-.np.dead{color:red}
-.small{font-size:10px;color:#999}
+/* RIGHT */
+.rightBtns button{
+margin-left:6px;
+padding:6px 10px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
 
-.arrow{font-size:16px;margin-top:3px}
+/* BIG BUTTON */
+.bigBtn{
+font-size:13px;
+background:#f5f5f5;
+}
 
+/* MAP BUTTON */
+.mapBtn{
+background:#fff3cd;
+font-weight:bold;
+}
+
+/* ===== CANVAS ===== */
+#cw{
+height:calc(100vh - 60px);
+overflow:hidden;
+position:relative;
+cursor:grab;
+}
+
+#mv{
+position:absolute;
+transform-origin:0 0;
+}
+
+/* ===== NODE ===== */
+.node{
+position:absolute;
+padding:6px 10px;
+border-radius:8px;
+border:2px solid #333;
+background:#fff;
+font-size:12px;
+min-width:80px;
+text-align:center;
+}
+
+.dead{
+color:red;
+}
+
+.smallStar{
+font-size:10px;
+color:#999;
+}
+
+/* ===== TOOLBAR ===== */
 .toolbar{
-position:absolute;top:10px;left:50%;transform:translateX(-50%);
-background:#fff;padding:6px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.2)
+position:absolute;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+background:#fff;
+padding:6px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.2);
 }
 
+/* ===== SEARCH ===== */
 .search{
-position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+position:absolute;
+bottom:10px;
+left:50%;
+transform:translateX(-50%);
 }
 
+/* ===== ARROW ===== */
+.arrow{
+font-size:16px;
+margin-top:3px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<div>Ratanshi Dada Family</div>
-<div class="namah">🙏 Shree Bahuchar Matay Namah 🙏</div>
-<div class="loc" onclick="window.open('https://maps.google.com/?q=Dholidhar Dhrangadhra')">
-🛕 Kuldevi Location
+
+<div class="leftTitle">Ratanshi Dada Family</div>
+
+<div class="centerTitle">🙏 Shree Bahuchar Matay Namah 🙏</div>
+
+<div class="rightBtns">
+<button class="bigBtn">Ritual</button>
+<button class="bigBtn">Preamble</button>
+<button class="mapBtn" onclick="window.open('https://maps.google.com/?q=Dholidhar Dhrangadhra')">
+🗺 Kuldevi
+</button>
 </div>
+
 </header>
 
 <div id="cw">
@@ -56,112 +142,75 @@ position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
 </div>
 
 <div class="search">
-<input id="s" placeholder="Search..." oninput="searchTree()">
+<input id="search" placeholder="Search..." oninput="searchNode()">
 </div>
 </div>
 
 <script>
 
-/* ===== YOUR DATA (SHORTENED HERE — KEEP YOUR FULL FD) ===== */
-const IND = {
-I19:{name:"RATANSHI",depth:0,deceased:true,children:["I18"]},
-I18:{name:"Thana",depth:1,deceased:true,children:["I17"]},
-I17:{name:"Kana",depth:2,deceased:true,children:["I16"]},
-I16:{name:"Jiva",depth:3,deceased:true,children:["I15"]},
-I15:{name:"Punja",depth:4,deceased:true,children:["I14"]},
-I14:{name:"Jutha",depth:5,deceased:true,children:["I12"]},
-I12:{name:"Kalji",depth:6,deceased:true,children:["I3"]},
-I3:{name:"Vrajlal",depth:7,deceased:true,children:["I2"]},
-I2:{name:"Kantilal",depth:8,deceased:true,children:["I1"]},
-I1:{name:"VIJAY VORA",depth:9,deceased:false,children:[]}
-}
+/* ===== USE YOUR FULL DATA HERE ===== */
+const IND = FD.individuals   // IMPORTANT
 
-/* ===== STATE ===== */
-let MODE="all"
+let mode="all"
 let scale=1, x=0, y=0
 
 /* ===== MODE ===== */
 function setMode(m){
-MODE=m
+mode=m
 render()
-}
-
-/* ===== SEARCH ===== */
-function searchTree(){
-let val=document.getElementById('s').value.toLowerCase()
-
-document.querySelectorAll('.np').forEach(n=>{
-if(n.innerText.toLowerCase().includes(val)){
-n.style.background='yellow'
-}else{
-n.style.background=''
-}
-})
 }
 
 /* ===== RENDER ===== */
 function render(){
-const mv=document.getElementById('mv')
+const mv=document.getElementById("mv")
 mv.innerHTML=""
 
-Object.keys(IND).forEach((id,i)=>{
-const p=IND[id]
+/* SHOW ALL MEMBERS CLEARLY */
+Object.values(IND).forEach((p,i)=>{
 
-/* LIVING */
-if(MODE==='live' && p.deceased){
-let d=document.createElement('div')
-d.className='nd small'
-d.innerText='*'
-d.style.left=i*120+'px'
-d.style.top=p.depth*80+'px'
-mv.appendChild(d)
-return
+let div=document.createElement("div")
+div.className="node"
+
+/* ===== LIVING LOGIC (CORRECT) ===== */
+if(mode==="live" && p.deceased){
+div.innerHTML="*"
+div.classList.add("smallStar")
+}else{
+div.innerHTML=p.name
+if(p.deceased) div.classList.add("dead")
 }
 
-/* GEN COLLAPSE */
-if(p.depth<7){
-let d=document.createElement('div')
-d.className='nd'
-d.innerHTML='<div class="np">Gen '+p.depth+'</div>'
-d.style.left=i*120+'px'
-d.style.top=p.depth*80+'px'
-mv.appendChild(d)
-return
-}
+/* ===== POSITION (KEEP SPREAD — NOT FORCED FIT) ===== */
+div.style.left=(i*140)+"px"
+div.style.top=(p.depth*90)+"px"
 
-/* NODE */
-let d=document.createElement('div')
-d.className='nd'
-
-let box=document.createElement('div')
-box.className='np '+(p.deceased?'dead':'')
-
-let txt=p.name
-
-if(!p.children || p.children.length===0){
-txt+=" (Age?)"
-}
-
-box.innerText=txt
-d.appendChild(box)
-
-/* ARROW */
+/* ===== ARROW ===== */
 if(p.children && p.children.length>0){
-let a=document.createElement('div')
-a.className='arrow'
-a.innerText='▼'
-d.appendChild(a)
+let ar=document.createElement("div")
+ar.className="arrow"
+ar.innerHTML="▼"
+div.appendChild(ar)
 }
 
-d.style.left=i*120+'px'
-d.style.top=p.depth*80+'px'
-
-mv.appendChild(d)
+mv.appendChild(div)
 
 })
 }
 
-/* ===== ZOOM / PAN ===== */
+/* ===== SEARCH ===== */
+function searchNode(){
+let val=document.getElementById("search").value.toLowerCase()
+
+document.querySelectorAll(".node").forEach(n=>{
+if(n.innerText.toLowerCase().includes(val)){
+n.style.background="yellow"
+}else{
+n.style.background=""
+}
+})
+}
+
+/* ===== PAN ===== */
 cw.onmousedown=e=>{
 let sx=e.clientX-x
 let sy=e.clientY-y
@@ -172,14 +221,11 @@ y=ev.clientY-sy
 mv.style.transform=`translate(${x}px,${y}px) scale(${scale})`
 }
 
-function up(){
-document.removeEventListener('mousemove',move)
+document.addEventListener("mousemove",move)
+document.addEventListener("mouseup",()=>document.removeEventListener("mousemove",move),{once:true})
 }
 
-document.addEventListener('mousemove',move)
-document.addEventListener('mouseup',up,{once:true})
-}
-
+/* ===== ZOOM ===== */
 cw.onwheel=e=>{
 e.preventDefault()
 scale+=e.deltaY*-0.001
