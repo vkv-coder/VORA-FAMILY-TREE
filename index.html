@@ -463,7 +463,7 @@ function showAddRel(){
     '</div>';
 }
 function addRelBtn(label,type,pid){
-  return '<button onclick="addRel(''+type+'',''+pid+'')" style="padding:10px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;color:var(--ink)">'+label+'</button>';
+  return '<button onclick="addRel(\''+type+'\',\''+pid+'\')" style="padding:10px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;color:#1C1B19;width:100%">'+label+'</button>';
 }
 function addRel(type,pid){
   var p=P[pid]; if(!p) return;
@@ -556,92 +556,6 @@ function showLiving(){
     sc=Math.max(0.05,Math.min(1.5,sc));
     tx=(ww-cw*sc)/2; ty=30; applyT();
   },120);
-}
-
-function renderLiving(){
-  descMemo={}; nodePos={};
-  Array.from(mover.children).forEach(function(c){ if(c.id!=="lsvg") c.remove(); });
-  var lsvg=document.getElementById("lsvg"); lsvg.innerHTML="";
-
-  var living=Object.values(P).filter(function(p){ return !p.deceased; });
-  if(living.length===0){
-    mover.style.width="320px"; mover.style.height="130px";
-    var msg=document.createElement("div");
-    msg.style.cssText="padding:40px 16px;text-align:center;color:#888;font-size:14px;width:320px";
-    msg.textContent="No living members found.";
-    mover.appendChild(msg); return;
-  }
-
-  // Group by depth
-  var byDepth={};
-  living.forEach(function(p){
-    if(!byDepth[p.depth]) byDepth[p.depth]=[];
-    byDepth[p.depth].push(p);
-  });
-  var depths=Object.keys(byDepth).map(Number).sort(function(a,b){return a-b;});
-
-  var pad=40, rowH=NH+40, colW=NW+HG;
-  var maxPerRow=Math.max.apply(null,depths.map(function(d){return byDepth[d].length;}));
-  var W=maxPerRow*colW+pad*2;
-  var H=depths.length*rowH+pad*2;
-
-  lsvg.setAttribute("width",W); lsvg.setAttribute("height",H);
-  mover.style.width=W+"px"; mover.style.height=H+"px";
-
-  depths.forEach(function(d,di){
-    var row=byDepth[d];
-    var rowW=row.length*colW-HG;
-    var startX=(W-rowW)/2;
-    row.forEach(function(p,i){
-      var nx=startX+i*colW;
-      var ny=pad+di*rowH;
-      nodePos[p.id]={nx:nx,ny:ny};
-      var cls=sexCls(p);
-      var div=document.createElement("div");
-      div.className="nd";
-      div.style.cssText="left:"+nx+"px;top:"+ny+"px;width:"+NW+"px;position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px";
-      var pill=document.createElement("div");
-      pill.className="npill "+cls;
-      pill.dataset.id=p.id;
-      pill.style.cssText="width:"+NW+"px;min-height:"+NH+"px;font-size:"+NFS+"px";
-      var ageHtml="";
-      if(p.birth){
-        var by=parseInt(p.birth.replace(/\D/g,"").slice(-4));
-        if(!isNaN(by)){ var age=2026-by; if(age>0&&age<100) ageHtml="<span class=\"nage\" style=\"font-size:"+NFSA+"px\">"+age+" yrs</span>"; }
-      }
-      pill.innerHTML="<span class=\"nname\">"+p.name+"</span>"+ageHtml+(p.city?"<span class=\"nage\" style=\"font-size:"+NFSA+"px\">"+p.city+"</span>":"");
-      pill.onclick=function(e){ if(didDrag) return; e.stopPropagation(); showProfile(p.id); };
-      div.appendChild(pill);
-      mover.appendChild(div);
-    });
-  });
-
-  setTimeout(function(){
-    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
-    sc=Math.min(1,(ww-40)/W,(wh-60)/H);
-    sc=Math.max(0.08,Math.min(1.5,sc));
-    tx=(ww-W*sc)/2; ty=30; applyT();
-  },120);
-}
-
-function showDescendants(){
-  if(!curId) return;
-  mode='desc'; descId=curId; descMemo={};
-  collapsed=new Set();
-  document.getElementById('tBack').style.display='block';
-  document.getElementById('tAll').style.display='none';
-  document.getElementById('tLive').style.display='none';
-  closePanel();
-  renderTree(ROOT);
-  setTimeout(function(){
-    centreOn(curId);
-    // Also fit to view
-    var cw=parseInt(mover.style.width)||800;
-    var ww=cwrap.clientWidth, wh=cwrap.clientHeight;
-    sc=Math.min(1,(ww-40)/cw,(wh-60)/parseInt(mover.style.height||400));
-    sc=Math.max(0.05,Math.min(1.5,sc));
-    tx=(ww-cw*sc)/2; ty=30; applyT();
-  },150);
 }
 
 function showProfile(id){
