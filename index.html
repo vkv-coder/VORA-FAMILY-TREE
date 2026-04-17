@@ -732,13 +732,13 @@ function showMatchList(matches){
     '<div style="display:flex;flex-direction:column;gap:6px">';
   matches.forEach(function(p){
     var trail=getTrail(p.id).map(function(tid){return P[tid]?P[tid].name:'';}).join(' → ');
-    html+='<button onclick="jumpTo(''+p.id+'')" style="padding:9px 12px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;color:#1C1B19;width:100%">'+
+    html+='<button onclick="jumpTo(\'' +p.id+ '\')" style="padding:9px 12px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;color:#1C1B19;width:100%">'+
       '<div style="font-weight:600">'+p.name+(p.deceased?' †':'')+'</div>'+
       '<div style="font-size:10px;color:#8A8880;margin-top:2px">'+trail+'</div>'+
       '</button>';
   });
   html+='</div>';
-  document.getElementById('phd').innerHTML='<div style="flex:1;font-family:Playfair Display,serif;font-size:17px;font-weight:600">Search Results</div><button class="cx" onclick="closeP()">✕</button>';
+  document.getElementById('phd').innerHTML='<div style="flex:1;font-family:Playfair Display,serif;font-size:17px;font-weight:600">Search Results</div><button class="cx" onclick="closeP()">&#10005;</button>';
   document.getElementById('pbd').innerHTML=html;
   document.getElementById('ov').classList.add('open');
 }
