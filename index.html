@@ -575,7 +575,7 @@ function openGenBox(depth){
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
-  renderFull();
+  renderFull(focusId);
   setTimeout(function(){
     var pos=npos[genPeople[0].id];
     if(pos){sc=mob?0.5:0.42;var ww=cw.clientWidth,wh=cw.clientHeight;tx=Math.round(ww/2-(pos.nx+NW/2)*sc);ty=Math.round(wh/4-(pos.ny)*sc);T();}
@@ -583,11 +583,11 @@ function openGenBox(depth){
 }
 
 // Full tree render (for focus/live/search modes)
-function renderFull(){
+function renderFull(rootId){
   DM={};npos={};
   Array.from(mv.children).forEach(function(c){if(c.id!=='sv')c.remove();});
   var sv=document.getElementById('sv');sv.innerHTML='';
-  var nodes=placeNodes(ROOT);
+  var nodes=placeNodes(rootId||ROOT);
   if(!nodes.length){mv.style.width='300px';mv.style.height='100px';return;}
   var mnX=1e9,mnY=1e9,mxX=-1e9,mxY=-1e9;
   nodes.forEach(function(n){
@@ -659,7 +659,7 @@ function showLive(){
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
-  renderFull();
+  renderFull(ROOT);
   setTimeout(function(){
     var W=parseInt(mv.style.width)||800,H=parseInt(mv.style.height)||600;
     var ww=cw.clientWidth,wh=cw.clientHeight;
@@ -683,7 +683,7 @@ function doSearch(q){
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
-  renderFull();
+  renderFull(focusId);
   setTimeout(function(){
     var pos=npos[first.id];
     if(pos){
@@ -738,7 +738,7 @@ function focusDesc(){
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
-  closeP();renderFull();
+  closeP();renderFull(focusId);
   setTimeout(function(){centreOn(curId,mob?0.65:0.55);},250);
 }
 
