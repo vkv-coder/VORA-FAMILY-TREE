@@ -49,7 +49,7 @@ header{background:var(--INK);padding:10px 12px 7px;flex-shrink:0}
 .ft{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:40;background:rgba(255,255,255,0.97);border-radius:18px;padding:5px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.12);border:1px solid var(--LN);pointer-events:auto}
 .fb{background:none;border:none;font-size:clamp(11px,3vw,13px);font-family:'DM Sans',sans-serif;cursor:pointer;padding:4px 9px;border-radius:10px;color:var(--INK);font-weight:500;white-space:nowrap}
 .fb.act{background:var(--INK);color:#fff}
-.sb{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.97);border-radius:20px;padding:8px 14px;border:1px solid var(--LN);box-shadow:0 3px 14px rgba(0,0,0,0.12);z-index:40;width:calc(100% - 32px);max-width:300px;pointer-events:auto}
+.sb{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;background:#fff;border-radius:20px;padding:9px 16px;border:1.5px solid var(--LN);box-shadow:0 4px 16px rgba(0,0,0,0.15);z-index:50;width:calc(100% - 24px);max-width:320px;pointer-events:auto}
 .sb input{border:none;outline:none;font-size:clamp(13px,3vw,15px);flex:1;background:transparent;font-family:'DM Sans',sans-serif}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,0.42);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .ov.open{display:flex}
@@ -120,7 +120,8 @@ header{background:var(--INK);padding:10px 12px 7px;flex-shrink:0}
     <button class="fb" id="bB" style="display:none" onclick="initView()">&#10005; Full tree</button>
   </div>
   <div class="sb">
-    <input id="si" placeholder="Search name or city..." oninput="doSearch(this.value)" onkeyup="doSearch(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <span style="font-size:16px;color:#bbb">&#128269;</span>
+    <input id="si" placeholder="Search name or city..." oninput="doSearch(this.value)" onkeyup="doSearch(this.value)" onchange="doSearch(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search">
     <span style="font-size:16px;color:#bbb;cursor:pointer;display:none" id="sc" onclick="clrS()">&#10005;</span>
   </div>
 </div>
@@ -146,7 +147,7 @@ var admin=false,pending=null,curId=null;
 var mode='init'; // init|all|live|focus|search
 var focusId=null;
 var mob=window.innerWidth<=640;
-var NW=mob?130:110,NH=mob?56:48,HG=mob?24:20,VG=mob?86:72,NFS=mob?12:11;
+var NW=mob?140:114,NH=mob?60:50,HG=mob?26:20,VG=mob?90:74,NFS=mob?13:11;
 // Summary box dimensions (gen 1-7)
 var SW=mob?120:100,SH=mob?46:40,SVG=mob?86:72;
 var tx=0,ty=0,sc=1,drag=false,sx=0,sy=0,stx=0,sty=0,moved=false;
@@ -166,7 +167,7 @@ cw.addEventListener('mousedown',function(e){
 window.addEventListener('mousemove',function(e){
   if(!drag)return;
   var dx=e.clientX-sx,dy=e.clientY-sy;
-  if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
+  if(Math.abs(dx)>12||Math.abs(dy)>12)moved=true;
   tx=stx+dx;ty=sty+dy;T();
 },false);
 window.addEventListener('mouseup',function(){drag=false;cw.classList.remove('g');},false);
@@ -195,7 +196,7 @@ cw.addEventListener('touchmove',function(e){
   var ts=e.touches;
   if(ts.length===1&&drag){
     var dx=ts[0].clientX-sx,dy=ts[0].clientY-sy;
-    if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
+    if(Math.abs(dx)>12||Math.abs(dy)>12)moved=true;
     tx=stx+dx;ty=sty+dy;T();
   }else if(ts.length===2&&pinch){
     var nd=Math.hypot(ts[1].clientX-ts[0].clientX,ts[1].clientY-ts[0].clientY);
@@ -671,9 +672,23 @@ function showLive(){
   setTimeout(function(){
     var W=parseInt(mv.style.width)||800,H=parseInt(mv.style.height)||600;
     var ww=cw.clientWidth,wh=cw.clientHeight;
-    sc=Math.min(1,(ww-20)/W,(wh-60)/H);sc=Math.max(0.04,sc);
-    tx=(ww-W*sc)/2;ty=30;T();
-  },280);
+    // Find leftmost living node and centre on it
+    var livingNodes=Object.values(P).filter(function(p){return !p.deceased&&npos[p.id];});
+    if(livingNodes.length){
+      // Use scale that makes boxes readable
+      sc=mob?0.6:0.5;
+      // Find the topmost living node
+      livingNodes.sort(function(a,b){return (npos[a.id]?npos[a.id].ny:999)-(npos[b.id]?npos[b.id].ny:999);});
+      var topLiving=livingNodes[0];
+      var pos=npos[topLiving.id];
+      tx=Math.round(ww/2-(pos.nx+NW/2)*sc);
+      ty=Math.round(wh/4-(pos.ny)*sc);
+    } else {
+      sc=Math.min(1,(ww-20)/W,(wh-60)/H);sc=Math.max(0.04,sc);
+      tx=(ww-W*sc)/2;ty=30;
+    }
+    T();
+  },300);
 }
 
 var searchMatches=[];
