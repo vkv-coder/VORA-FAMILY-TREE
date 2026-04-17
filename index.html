@@ -103,8 +103,13 @@ header{background:var(--INK);padding:10px 12px 7px;flex-shrink:0}
       <button class="hb r" onclick="window.open('rituals.pdf','_blank')">&#128209; Rituals</button>
     </div>
   </div>
-  <div class="nm">&#x1F649; Shree Bahuchar Matay Namah:</div>
-  <div class="lc" onclick="window.open('https://maps.google.com/?q=Dholidhar+Dhrangadhra+Gujarat','_blank')">&#128205; XFV6+WWC, Dholidhar, Dhrangadhra, Gujarat 363310</div>
+  <div class="nm">🙏 Shree Bahuchar Matay Namah: 🙏</div>
+  <div style="text-align:center;padding:2px 0 3px">
+    <button onclick="window.open('https://maps.google.com/?q=Dholidhar+Dhrangadhra+Gujarat','_blank')" style="background:rgba(255,255,255,0.13);border:none;border-radius:14px;padding:4px 12px;color:#fff;font-size:clamp(10px,2.5vw,12px);cursor:pointer;font-family:DM Sans,sans-serif;display:inline-flex;align-items:center;gap:5px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Kuldevi Location &nbsp;&#8599;
+    </button>
+  </div>
   <div id="tr"></div>
 </header>
 <div id="cw">
@@ -201,6 +206,8 @@ cw.addEventListener('touchmove',function(e){
 cw.addEventListener('touchend',function(e){
   if(e.touches.length===0){drag=false;pinch=false;}
   if(e.touches.length===1)pinch=false;
+  // Reset moved after short delay so tap is registered
+  setTimeout(function(){moved=false;},50);
 },{passive:false});
 
 function alignC(){
@@ -639,7 +646,14 @@ function renderFull(rootId){
     pill.style.cssText='width:'+NW+'px;min-height:'+NH+'px;font-size:'+NFS+'px';
     var sub=p.city?'<span class="nc">'+p.city+'</span>':'';
     pill.innerHTML='<span class="nn">'+p.name+'</span>'+sub;
-    if(!ghost)pill.onclick=function(e){if(moved)return;e.stopPropagation();showProfile(p.id);};
+    if(!ghost){
+      pill.onclick=function(e){if(moved)return;e.stopPropagation();showProfile(p.id);};
+      pill.addEventListener('touchend',function(e){
+        if(moved)return;
+        e.preventDefault();e.stopPropagation();
+        showProfile(p.id);
+      },{passive:false});
+    }
     div.appendChild(pill);
     var kids=(p.children||[]).filter(function(c){return isVis(P[c]);});
     var xb=document.createElement('div');
@@ -668,32 +682,82 @@ function showLive(){
   },280);
 }
 
+var searchMatches=[];
 function doSearch(q){
   q=q.trim().toLowerCase();
   document.getElementById('sc').style.display=q?'block':'none';
   if(!q){clrS();return;}
-  var matches=Object.values(P).filter(function(p){
+  searchMatches=Object.values(P).filter(function(p){
     return p.name.toLowerCase().includes(q)||(p.city&&p.city.toLowerCase().includes(q));
   });
-  if(!matches.length)return;
-  var first=matches[0];
-  var pars=PM[first.id]||[];
-  mode='focus';focusId=pars.length?pars[0]:first.id;
-  DM={};coll=new Set();
+  if(!searchMatches.length)return;
+
+  if(searchMatches.length===1){
+    // Single match: show parent + descendants
+    var first=searchMatches[0];
+    var pars=PM[first.id]||[];
+    mode='focus';focusId=pars.length?pars[0]:first.id;
+    DM={};coll=new Set();
+    document.getElementById('bB').style.display='block';
+    document.getElementById('bA').style.display='none';
+    document.getElementById('bL').style.display='none';
+    renderFull(focusId);
+    setTimeout(function(){
+      var pos=npos[first.id];
+      if(pos){sc=mob?0.85:0.8;var ww=cw.clientWidth,wh=cw.clientHeight;tx=Math.round(ww/2-(pos.nx+NW/2)*sc);ty=Math.round(wh/3-(pos.ny)*sc);T();}
+      document.querySelectorAll('.np').forEach(function(e){e.classList.remove('sel');});
+      var el=document.querySelector('.np[data-id="'+first.id+'"]');if(el)el.classList.add('sel');
+      showTrail(first.id);
+    },250);
+  } else {
+    // Multiple matches: show full tree, highlight ALL matches
+    mode='all';focusId=null;DM={};coll=new Set();
+    Object.values(P).forEach(function(p){if(p.depth>=9)coll.add(p.id);});
+    // Uncollapse ancestors of all matches
+    searchMatches.forEach(function(m){
+      coll.delete(m.id);
+      (PM[m.id]||[]).forEach(function(pid){coll.delete(pid);(PM[pid]||[]).forEach(function(gid){coll.delete(gid);});});
+    });
+    document.getElementById('bB').style.display='block';
+    document.getElementById('bA').style.display='none';
+    document.getElementById('bL').style.display='none';
+    // Show match list panel
+    showMatchList(searchMatches);
+  }
+}
+
+function showMatchList(matches){
+  // Show a small panel listing all matches
+  var html='<div style="padding:4px 0 10px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--MU)">'+matches.length+' matches found</div>'+
+    '<div style="display:flex;flex-direction:column;gap:6px">';
+  matches.forEach(function(p){
+    var trail=getTrail(p.id).map(function(tid){return P[tid]?P[tid].name:'';}).join(' → ');
+    html+='<button onclick="jumpTo(''+p.id+'')" style="padding:9px 12px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;color:#1C1B19;width:100%">'+
+      '<div style="font-weight:600">'+p.name+(p.deceased?' †':'')+'</div>'+
+      '<div style="font-size:10px;color:#8A8880;margin-top:2px">'+trail+'</div>'+
+      '</button>';
+  });
+  html+='</div>';
+  document.getElementById('phd').innerHTML='<div style="flex:1;font-family:Playfair Display,serif;font-size:17px;font-weight:600">Search Results</div><button class="cx" onclick="closeP()">✕</button>';
+  document.getElementById('pbd').innerHTML=html;
+  document.getElementById('ov').classList.add('open');
+}
+
+function jumpTo(id){
+  closeP();
+  var p=P[id];if(!p)return;
+  var pars=PM[id]||[];
+  mode='focus';focusId=pars.length?pars[0]:id;DM={};coll=new Set();
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
   renderFull(focusId);
   setTimeout(function(){
-    var pos=npos[first.id];
-    if(pos){
-      sc=mob?0.85:0.8;
-      var ww=cw.clientWidth,wh=cw.clientHeight;
-      tx=Math.round(ww/2-(pos.nx+NW/2)*sc);
-      ty=Math.round(wh/3-(pos.ny)*sc);T();
-    }
-    matches.forEach(function(p){var el=document.querySelector('.np[data-id="'+p.id+'"]');if(el)el.classList.add('sel');});
-    showTrail(first.id);
+    var pos=npos[id];
+    if(pos){sc=mob?0.85:0.8;var ww=cw.clientWidth,wh=cw.clientHeight;tx=Math.round(ww/2-(pos.nx+NW/2)*sc);ty=Math.round(wh/3-(pos.ny)*sc);T();}
+    document.querySelectorAll('.np').forEach(function(e){e.classList.remove('sel');});
+    var el=document.querySelector('.np[data-id="'+id+'"]');if(el)el.classList.add('sel');
+    showTrail(id);
   },250);
 }
 function clrS(){document.getElementById('si').value='';document.getElementById('sc').style.display='none';initView();}
