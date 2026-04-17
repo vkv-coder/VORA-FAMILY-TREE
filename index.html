@@ -120,7 +120,7 @@ header{background:var(--INK);padding:10px 12px 7px;flex-shrink:0}
     <button class="fb" id="bB" style="display:none" onclick="initView()">&#10005; Full tree</button>
   </div>
   <div class="sb">
-    <input id="si" placeholder="Search name or city..." oninput="doSearch(this.value)" autocomplete="off">
+    <input id="si" placeholder="Search name or city..." oninput="doSearch(this.value)" onkeyup="doSearch(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <span style="font-size:16px;color:#bbb;cursor:pointer;display:none" id="sc" onclick="clrS()">&#10005;</span>
   </div>
 </div>
@@ -179,8 +179,9 @@ cw.addEventListener('wheel',function(e){
 },{passive:false});
 cw.addEventListener('touchstart',function(e){
   if(e.target.closest('.ft,.sb,.hbs,.xb'))return;
+  moved=false; // reset on every touch start
   var ts=e.touches;
-  if(ts.length===1){pinch=false;drag=true;moved=false;sx=ts[0].clientX;sy=ts[0].clientY;stx=tx;sty=ty;}
+  if(ts.length===1){pinch=false;drag=true;sx=ts[0].clientX;sy=ts[0].clientY;stx=tx;sty=ty;}
   else if(ts.length===2){
     drag=false;pinch=true;
     pd=Math.hypot(ts[1].clientX-ts[0].clientX,ts[1].clientY-ts[0].clientY);
@@ -206,8 +207,6 @@ cw.addEventListener('touchmove',function(e){
 cw.addEventListener('touchend',function(e){
   if(e.touches.length===0){drag=false;pinch=false;}
   if(e.touches.length===1)pinch=false;
-  // Reset moved after short delay so tap is registered
-  setTimeout(function(){moved=false;},50);
 },{passive:false});
 
 function alignC(){
@@ -648,11 +647,6 @@ function renderFull(rootId){
     pill.innerHTML='<span class="nn">'+p.name+'</span>'+sub;
     if(!ghost){
       pill.onclick=function(e){if(moved)return;e.stopPropagation();showProfile(p.id);};
-      pill.addEventListener('touchend',function(e){
-        if(moved)return;
-        e.preventDefault();e.stopPropagation();
-        showProfile(p.id);
-      },{passive:false});
     }
     div.appendChild(pill);
     var kids=(p.children||[]).filter(function(c){return isVis(P[c]);});
