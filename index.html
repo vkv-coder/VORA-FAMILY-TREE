@@ -360,8 +360,30 @@ function render(rootId){
     pill.style.cssText='width:'+NW+'px;min-height:'+NH+'px;font-size:'+NFS+'px';
     var cityHtml=p.city?'<span class="nc">'+p.city+'</span>':'';
     var birthHtml=p.birth?'<span class="nc">b.'+p.birth+'</span>':'';
-    pill.innerHTML='<span class="nn">'+p.name+'</span>'+(p.birth?birthHtml:cityHtml);
-    if(!ghost)pill.onclick=function(e){if(moved)return;e.stopPropagation();showProfile(p.id);};
+    var isCollapsed=coll.has(p.id);
+    var collHtml='';
+    if(isCollapsed){
+      // Count all descendants in this branch
+      var descCount=0;
+      Object.values(P).forEach(function(q){ if(q.id!==p.id&&isDescOf(q.id,p.id)) descCount++; });
+      collHtml='<span class="nc" style="font-size:9px;color:var(--AU)">'+descCount+' members &#9660;</span>';
+    }
+    pill.innerHTML='<span class="nn">'+p.name+'</span>'+(isCollapsed?collHtml:(p.birth?birthHtml:cityHtml));
+    if(!ghost)pill.onclick=function(e){
+      if(moved)return;e.stopPropagation();
+      // If this node is collapsed (gen 1-7 summary view), expand it
+      if(coll.has(p.id)){
+        coll.delete(p.id);
+        mode='focus';focusId=p.id;DM={};
+        document.getElementById('bB').style.display='block';
+        document.getElementById('bA').style.display='none';
+        document.getElementById('bL').style.display='none';
+        render(ROOT);
+        setTimeout(function(){centreOn(p.id,mob?0.5:0.42);},250);
+        return;
+      }
+      showProfile(p.id);
+    };
     div.appendChild(pill);
     var kids=(p.children||[]).filter(function(c){return isVis(P[c]);});
     var xb=document.createElement('div');
@@ -377,8 +399,9 @@ function render(rootId){
 function showAll(){
   mode='all';focusId=null;DM={};
   coll=new Set();
-  // Collapse gen 7+ (all deceased) for initial view, show gen 0-6
-  Object.values(P).forEach(function(p){if(p.depth>=7)coll.add(p.id);});
+  // Gen 1-7: collapse (show as small single boxes, one per gen in a line)
+  // Gen 8+: fully expanded
+  Object.values(P).forEach(function(p){ if(p.depth>=1&&p.depth<=7) coll.add(p.id); });
   document.getElementById('bA').classList.add('act');
   document.getElementById('bL').classList.remove('act');
   document.getElementById('bB').style.display='none';
@@ -531,8 +554,12 @@ function showEd(){
     '<button class="ab p" style="margin-top:12px;width:calc(100%);margin-left:0;margin-right:0" onclick="saveEd()">&#128190; Save</button>'+
     '<button class="ab s" style="width:calc(100%);margin-left:0;margin-right:0;margin-top:4px" onclick="showProfile(curId)">Cancel</button></div>';
 }
+var lastEdit=null; // stores {id, prev} for undo
+
 function saveEd(){
   var p=P[curId];if(!p)return;
+  // Store previous state for undo
+  lastEdit={id:curId, prev:{name:p.name,sex:p.sex,deceased:p.deceased,birth:p.birth,death:p.death,city:p.city,note:p.note}};
   p.name=document.getElementById('en').value.trim()||p.name;
   p.sex=document.getElementById('es').value;
   p.deceased=document.getElementById('ed').value==='1';
@@ -540,7 +567,34 @@ function saveEd(){
   p.death=document.getElementById('edd').value.trim();
   p.city=document.getElementById('ec').value.trim();
   p.note=document.getElementById('enote').value.trim();
-  closeP();render(ROOT);setTimeout(function(){showProfile(curId);},120);
+  closeP();render(ROOT);
+  setTimeout(function(){
+    showProfile(curId);
+    // Show undo toast
+    showUndo();
+  },120);
+}
+
+function showUndo(){
+  var t=document.getElementById('undoToast');
+  if(!t){
+    t=document.createElement('div');t.id='undoToast';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1C1B19;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-family:DM Sans,sans-serif;z-index:500;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3)';
+    document.body.appendChild(t);
+  }
+  t.innerHTML='Changes saved &nbsp;<button onclick="undoEdit()" style="background:var(--AU);border:none;border-radius:10px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:DM Sans,sans-serif;font-weight:600">Undo</button>';
+  t.style.display='flex';
+  clearTimeout(window._undoTimer);
+  window._undoTimer=setTimeout(function(){t.style.display='none';},5000);
+}
+
+function undoEdit(){
+  if(!lastEdit)return;
+  var p=P[lastEdit.id];if(!p)return;
+  Object.assign(p,lastEdit.prev);
+  lastEdit=null;
+  document.getElementById('undoToast').style.display='none';
+  render(ROOT);setTimeout(function(){showProfile(curId);},120);
 }
 
 function showAdd(){
