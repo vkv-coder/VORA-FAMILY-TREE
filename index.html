@@ -97,8 +97,13 @@ header{background:var(--INK);padding:10px 12px 7px;flex-shrink:0}
     <div class="ht">Ratanshi Dada (Dhrangadhra) Family</div>
     <div class="hbs">
       <button class="hb" onclick="alignC()">&#8984; Centre</button>
+      <button class="hb" onclick="togglePrintMenu()" id="pmbtn" style="background:#2c5f8a">&#128438; Print &#9660;</button>
       <button class="hb g" onclick="window.open('preamble.pdf','_blank')">&#128218; Preamble</button>
       <button class="hb r" onclick="window.open('rituals.pdf','_blank')">&#128209; Rituals</button>
+    </div>
+    <div id="pmenu" style="display:none;position:absolute;top:52px;right:8px;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.18);z-index:200;min-width:230px;overflow:hidden;border:1px solid #eee">
+      <div onclick="doPrint('full')" style="padding:13px 16px;cursor:pointer;font-size:13px;font-weight:500;color:#1C1B19;border-bottom:1px solid #f0eeea;font-family:DM Sans,sans-serif">&#127968; Full tree (Ratanshi → all)</div>
+      <div onclick="doPrint('view')" style="padding:13px 16px;cursor:pointer;font-size:13px;font-weight:500;color:#1C1B19;font-family:DM Sans,sans-serif">&#128065; Current view on screen</div>
     </div>
   </div>
   <div class="nm">🙏 Shree Bahuchar Matay Namah: 🙏</div>
@@ -121,10 +126,6 @@ header{background:var(--INK);padding:10px 12px 7px;flex-shrink:0}
     <button class="fb act" id="bA" onclick="showAll()">All</button>
     <button class="fb" id="bL" onclick="showLive()">&#127822; Living</button>
     <button class="fb" id="bB" style="display:none" onclick="showAll()">&#10005; Full tree</button>
-  </div>
-  <div class="sb">
-    <input id="si" placeholder="Search name or city..." oninput="doSearch(this.value)" autocomplete="off">
-    <span style="font-size:16px;color:#bbb;cursor:pointer;display:none" id="sc" onclick="clrS()">&#10005;</span>
   </div>
 </div>
 <div class="ov" id="ov" onclick="if(event.target===this)closeP()">
@@ -640,6 +641,57 @@ function delP(){
   delete P[curId];delete PM[curId];
   closeP();render(ROOT);
 }
+
+function togglePrintMenu(){
+  var m=document.getElementById('pmenu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#pmbtn')&&!e.target.closest('#pmenu')){var m=document.getElementById('pmenu');if(m)m.style.display='none';}
+});
+function doPrint(printMode){
+  document.getElementById('pmenu').style.display='none';
+  var pNW=90,pNH=42,pHG=14,pVG=56;
+  var printNodes=[],printPeople={},pPlaced=new Set();
+  if(printMode==='full'){
+    Object.values(P).forEach(function(p){printPeople[p.id]=p;});
+    function pLW(id,vis){vis=vis||new Set();if(vis.has(id))return 1;vis.add(id);var p=P[id];if(!p)return 1;var kids=p.children||[];if(!kids.length)return 1;return kids.reduce(function(s,c){return s+pLW(c,vis);},0);}
+    function pPl(id,x,y,vis){
+      vis=vis||new Set();if(vis.has(id))return;var p=P[id];if(!p)return;vis.add(id);pPlaced.add(id);
+      var spX=null;if(p.spouses&&p.spouses.length){var spId=p.spouses.find(function(s){return!pPlaced.has(s)&&P[s];});if(spId){pPlaced.add(spId);spX=x-pNW-pHG-10;printNodes.push({id:spId,x:spX,y:y,isSp:true});printPeople[spId]=P[spId];}}
+      printNodes.push({id:id,x:x,y:y,spX:spX});
+      var kids=p.children||[];
+      if(kids.length){var lws=kids.map(function(c){return pLW(c);});var tot=lws.reduce(function(s,v){return s+v;},0);var totPx=tot*(pNW+pHG)-pHG;var parMid=spX!=null?(x+pNW/2+spX+pNW/2)/2:x+pNW/2;var cx=parMid-totPx/2,cy=y+pNH+pVG;kids.forEach(function(cid,i){var cw2=lws[i]*(pNW+pHG);pPl(cid,cx+(cw2-pNW)/2,cy,vis);cx+=cw2;});}
+    }
+    pPl('I19',0,0);
+  } else {
+    pNW=NW;pNH=NH;pHG=HG;pVG=VG;
+    document.querySelectorAll('.np[data-id]').forEach(function(el){
+      var id=el.dataset.id;var p=P[id];if(!p)return;var pos=npos[id];if(!pos)return;
+      printPeople[id]=p;printNodes.push({id:id,x:pos.nx,y:pos.ny,spX:null,isSp:false});
+    });
+  }
+  var mnX=1e9,mnY=1e9,mxX=-1e9,mxY=-1e9;
+  printNodes.forEach(function(n){if(n.spX!=null)mnX=Math.min(mnX,n.spX);mnX=Math.min(mnX,n.x);mnY=Math.min(mnY,n.y);mxX=Math.max(mxX,n.x+pNW);mxY=Math.max(mxY,n.y+pNH);});
+  var pad=40,W=mxX-mnX+pad*2,H=mxY-mnY+pad*2;
+  var ptitle=printMode==='full'?'Ratanshi Dada (Dhrangadhra) Family Tree':(focusId&&P[focusId]?P[focusId].name+' Family Branch':'Current View');
+  var pcount=Object.keys(printPeople).length;
+  var parNode={};
+  printNodes.forEach(function(n){if(n.isSp)return;var p=printPeople[n.id];if(!p)return;(p.children||[]).filter(function(c){return !!printPeople[c];}).forEach(function(cid){parNode[cid]=n;});});
+  var svgL='<svg style="position:absolute;top:0;left:0;overflow:visible" width="'+W+'" height="'+H+'">';
+  printNodes.forEach(function(n){var par=parNode[n.id];if(!par||n.isSp)return;var cx=n.x-mnX+pad+pNW/2,cy=n.y-mnY+pad;var pm2=par.spX!=null?((par.x-mnX+pad+pNW/2)+(par.spX-mnX+pad+pNW/2))/2:par.x-mnX+pad+pNW/2;var pby=par.y-mnY+pad+pNH,my=pby+(cy-pby)*0.45;svgL+='<path d="M'+pm2+' '+pby+' L'+pm2+' '+my+' L'+cx+' '+my+' L'+cx+' '+cy+'" fill="none" stroke="#C8B89A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>';});
+  printNodes.forEach(function(n){if(n.spX==null)return;var x1=n.x-mnX+pad,y1=n.y-mnY+pad+pNH/2,x2=n.spX-mnX+pad+pNW;svgL+='<line x1="'+x2+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'" stroke="#C8B89A" stroke-width="1.2" stroke-dasharray="4 3"/>';});
+  svgL+='</svg>';
+  var pillsH='';
+  printNodes.forEach(function(n){var p=printPeople[n.id];if(!p)return;var nx=n.x-mnX+pad,ny=n.y-mnY+pad;var cls=p.sex==='F'?'F':p.sex==='M'?'M':'O';var sub='';if(p.birth){var by=p.birth.split(' ').pop();sub='<div class="nc">'+by+(p.city?' | '+p.city:'')+'</div>';}else if(p.city){sub='<div class="nc">'+p.city+'</div>';}pillsH+='<div style="position:absolute;left:'+nx+'px;top:'+ny+'px;width:'+pNW+'px"><div class="np '+cls+(p.deceased?' dead':'')+'" style="width:'+pNW+'px;min-height:'+pNH+'px"><span class="nn">'+p.name+'</span>'+sub+'</div></div>';});
+  var pw=window.open('','_blank');
+  pw.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+ptitle+'</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"DM Sans",Arial,sans-serif;background:#FAF9F5;padding:14px}.hdr{text-align:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #C8A96A}.htit{font-family:"Playfair Display",serif;font-size:20px;font-weight:700;color:#1C1B19;margin-bottom:3px}.hsub{font-size:10px;color:#8A8880}.tree{position:relative}.np{border-radius:7px;border:1.5px solid;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 5px;line-height:1.3}.np.M{background:#E3EEF8;border-color:#1A5FAD}.np.F{background:#F5E3EE;border-color:#A03365}.np.O{background:#F0EEE8;border-color:#7A7870}.nn{font-weight:600;word-break:break-word;font-size:7.5px;color:#0B3F74}.np.F .nn{color:#6E1F44}.np.dead .nn{color:#C0392B!important}.nc{font-size:6.5px;color:#8A8880;margin-top:1px}.btns{text-align:center;margin-bottom:12px}@page{size:A1 landscape;margin:8mm}@media print{.btns{display:none}body{padding:0;background:#fff}}</style></head><body>');
+  pw.document.write('<div class="hdr"><div class="htit">'+ptitle+'</div><div class="hsub">Shree Bahuchar Matay Namah &nbsp;&#8226;&nbsp; '+pcount+' members &nbsp;&#8226;&nbsp; '+new Date().toLocaleDateString('en-IN')+'</div></div>');
+  pw.document.write('<div class="btns"><button onclick="window.print()" style="background:#1C1B19;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;cursor:pointer;margin-right:8px">&#128438; Save as PDF / Print</button><button onclick="window.close()" style="background:#f0eeea;border:none;border-radius:8px;padding:10px 24px;font-size:14px;cursor:pointer">Close</button><p style="margin-top:6px;font-size:10px;color:#888">In print dialog: Destination = Save as PDF &nbsp;|&nbsp; Paper = A1 Landscape &nbsp;|&nbsp; Scale = Fit to page</p></div>');
+  pw.document.write('<div class="tree" style="width:'+W+'px;height:'+H+'px;position:relative">'+svgL+pillsH+'</div></body></html>');
+  pw.document.close();
+}
+
 
 showAll();
 
