@@ -470,8 +470,8 @@ function initView(){
   rpill.style.cssText='width:'+NW+'px;min-height:'+NH+'px;font-size:'+NFS+'px';
   rpill.innerHTML='<span class="nn">'+rat.name+'</span><span class="nc">Ancestor</span>';
   rpill.addEventListener('touchstart',function(e){rpill._ts=Date.now();},{passive:true});
-  rpill.addEventListener('touchend',function(e){if(Date.now()-rpill._ts<300&&!moved){e.preventDefault();showProfile(rat.id);}},{passive:false});
-  rpill.onclick=function(e){if(!moved)showProfile(rat.id);};
+  rpill.addEventListener('touchend',function(e){if(Date.now()-rpill._ts<300&&!moved){e.preventDefault();tapPerson(rat.id);}},{passive:false});
+  rpill.onclick=function(e){if(!moved)tapPerson(rat.id);};
   rdiv.appendChild(rpill);mv.appendChild(rdiv);
 
   // Draw vertical line from Ratanshi down through all gen boxes to gen8
@@ -565,8 +565,8 @@ function initView(){
     pill.innerHTML='<span class="nn">'+p.name+'</span>'+sub;
     var _pid2=p.id;
     pill.addEventListener('touchstart',function(e){pill._ts=Date.now();},{passive:true});
-    pill.addEventListener('touchend',function(e){if(Date.now()-pill._ts<300&&!moved){e.preventDefault();showProfile(_pid2);}},{passive:false});
-    pill.onclick=function(e){if(!moved)showProfile(_pid2);};
+    pill.addEventListener('touchend',function(e){if(Date.now()-pill._ts<300&&!moved){e.preventDefault();tapPerson(_pid2);}},{passive:false});
+    pill.onclick=function(e){if(!moved)tapPerson(_pid2);};
     div.appendChild(pill);
     var kids=(p.children||[]).filter(function(c){return P[c]&&P[c].depth>=8;});
     var xb=document.createElement('div');
@@ -817,9 +817,9 @@ function renderFull(rootId){
       var _ts=0;
       pill.addEventListener('touchstart',function(e){_ts=Date.now();},{passive:true});
       pill.addEventListener('touchend',function(e){
-        if(Date.now()-_ts<300&&!moved){e.preventDefault();showProfile(_pid);}
+        if(Date.now()-_ts<300&&!moved){e.preventDefault();tapPerson(_pid);}
       },{passive:false});
-      pill.onclick=function(e){if(!moved)showProfile(_pid);};
+      pill.onclick=function(e){if(!moved)tapPerson(_pid);};
     }
     div.appendChild(pill);
     var kids=(p.children||[]).filter(function(c){return isVis(P[c]);});
@@ -1109,6 +1109,36 @@ function doPrint(){
 }
 
 initView();
+
+function tapPerson(id){
+  var p=P[id];if(!p)return;
+  // In all/init mode: switch to focus view (parent + all descendants)
+  if(mode==='all'||mode==='init'){
+    var pars=PM[id]||[];
+    mode='focus';
+    focusId=pars.length?pars[0]:id;
+    DM={};coll=new Set();
+    document.getElementById('bB').style.display='block';
+    document.getElementById('bA').style.display='none';
+    document.getElementById('bL').style.display='none';
+    var rRoot=pars.length?pars[0]:id;
+    renderFull(rRoot);
+    setTimeout(function(){
+      var pos=npos[id];
+      if(pos){
+        sc=mob?0.7:0.6;
+        var ww=cw.clientWidth,wh=cw.clientHeight;
+        tx=Math.round(ww/2-(pos.nx+NW/2)*sc);
+        ty=Math.round(wh/4-(pos.ny)*sc);
+        T();
+      }
+      showProfile(id);
+    },250);
+  } else {
+    // Already in focus/live mode - just open profile
+    showProfile(id);
+  }
+}
 
 function showProfile(id){
   var p=P[id];if(!p)return;curId=id;
