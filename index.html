@@ -160,7 +160,7 @@ var admin=false,pending=null,curId=null;
 var mode='init'; // init|all|live|focus|search
 var focusId=null;
 var mob=window.innerWidth<=640;
-var NW=mob?150:130,NH=mob?62:52,HG=mob?30:24,VG=mob?94:78,NFS=mob?12:11;
+var NW=mob?155:140,NH=mob?62:52,HG=mob?36:30,VG=mob?94:80,NFS=mob?12:11;
 // Summary box dimensions (gen 1-7)
 var SW=mob?130:110,SH=mob?46:40,SVG=mob?94:78;
 var tx=0,ty=0,sc=1,drag=false,sx=0,sy=0,stx=0,sty=0,moved=false;
@@ -874,20 +874,36 @@ function doSearch(q){
   if(!searchMatches.length)return;
 
   if(searchMatches.length===1){
-    // Single match: show parent + descendants
     var first=searchMatches[0];
     var pars=PM[first.id]||[];
-    mode='focus';focusId=pars.length?pars[0]:first.id;
+    mode='focus';
+    // Show the person + ALL their descendants
+    // focusId = person themselves (not parent) so ALL their children show
+    focusId=first.id;
     DM={};coll=new Set();
     document.getElementById('bB').style.display='block';
     document.getElementById('bA').style.display='none';
     document.getElementById('bL').style.display='none';
-    renderFull(focusId);
+    // Render from parent so person + siblings + descendants all visible
+    var renderRoot=pars.length?pars[0]:first.id;
+    // But isVis in focus mode only shows focusId and descendants
+    // So we need to also show parent for context - override focusId to parent
+    if(pars.length){
+      focusId=pars[0]; // show from parent down (includes person + all siblings)
+    }
+    renderFull(renderRoot);
     setTimeout(function(){
       var pos=npos[first.id];
-      if(pos){sc=mob?0.85:0.8;var ww=cw.clientWidth,wh=cw.clientHeight;tx=Math.round(ww/2-(pos.nx+NW/2)*sc);ty=Math.round(wh/3-(pos.ny)*sc);T();}
+      if(pos){
+        sc=mob?0.7:0.6;
+        var ww=cw.clientWidth,wh=cw.clientHeight;
+        tx=Math.round(ww/2-(pos.nx+NW/2)*sc);
+        ty=Math.round(wh/4-(pos.ny)*sc);
+        T();
+      }
       document.querySelectorAll('.np').forEach(function(e){e.classList.remove('sel');});
-      var el=document.querySelector('.np[data-id="'+first.id+'"]');if(el)el.classList.add('sel');
+      var el=document.querySelector('.np[data-id="'+first.id+'"]');
+      if(el)el.classList.add('sel');
       showTrail(first.id);
     },250);
   } else {
@@ -928,14 +944,17 @@ function jumpTo(id){
   closeP();
   var p=P[id];if(!p)return;
   var pars=PM[id]||[];
-  mode='focus';focusId=pars.length?pars[0]:id;DM={};coll=new Set();
+  mode='focus';
+  focusId=pars.length?pars[0]:id; // show parent down so siblings visible
+  DM={};coll=new Set();
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
-  renderFull(focusId);
+  var renderRoot=pars.length?pars[0]:id;
+  renderFull(renderRoot);
   setTimeout(function(){
     var pos=npos[id];
-    if(pos){sc=mob?0.85:0.8;var ww=cw.clientWidth,wh=cw.clientHeight;tx=Math.round(ww/2-(pos.nx+NW/2)*sc);ty=Math.round(wh/3-(pos.ny)*sc);T();}
+    if(pos){sc=mob?0.7:0.6;var ww=cw.clientWidth,wh=cw.clientHeight;tx=Math.round(ww/2-(pos.nx+NW/2)*sc);ty=Math.round(wh/4-(pos.ny)*sc);T();}
     document.querySelectorAll('.np').forEach(function(e){e.classList.remove('sel');});
     var el=document.querySelector('.np[data-id="'+id+'"]');if(el)el.classList.add('sel');
     showTrail(id);
@@ -1127,12 +1146,15 @@ function pills(ids){
 function closeP(){document.getElementById('ov').classList.remove('open');}
 
 function focusDesc(){
-  mode='focus';focusId=curId;DM={};coll=new Set();
+  mode='focus';DM={};coll=new Set();
+  // Show parent + all siblings + all descendants
+  var pars=PM[curId]||[];
+  focusId=pars.length?pars[0]:curId; // start from parent so siblings visible
   document.getElementById('bB').style.display='block';
   document.getElementById('bA').style.display='none';
   document.getElementById('bL').style.display='none';
   closeP();renderFull(focusId);
-  setTimeout(function(){centreOn(curId,mob?0.65:0.55);},250);
+  setTimeout(function(){centreOn(curId,mob?0.6:0.5);},250);
 }
 
 function needPin(fn){
