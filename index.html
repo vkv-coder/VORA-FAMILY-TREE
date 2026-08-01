@@ -145,6 +145,12 @@ header{background:linear-gradient(135deg,#1a3a5c 0%,#2c5f8a 100%);padding:10px 1
     <input class="pi" id="pi" type="password" maxlength="4" placeholder="••••" oninput="if(this.value.length===4)doPin()">
     <div class="pe" id="pe"></div>
     <button class="pg" onclick="doPin()">Unlock</button>
+    <div style="text-align:center;margin-top:12px">
+      <a href="#" id="forgotPinLink" onclick="document.getElementById('forgotPinLink').style.display='none';document.getElementById('forgotPinMsg').style.display='block';return false;" style="font-size:12px;text-decoration:underline;color:inherit">Forgot PIN?</a>
+    </div>
+    <p id="forgotPinMsg" style="display:none;text-align:center;margin-top:8px;font-size:11px;opacity:0.8">
+      Write to <a href="mailto:vkvcoder.support@gmail.com">vkvcoder.support@gmail.com</a> and your family's PIN will be sent to you.
+    </p>
   </div>
 </div>
 <script>
