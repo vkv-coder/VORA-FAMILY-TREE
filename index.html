@@ -583,7 +583,7 @@ function showEd(){
 }
 var lastEdit=null; // stores {id, prev} for undo
 
-function saveEd(){
+async function saveEd(){
   var p=P[curId];if(!p)return;
   // Store previous state for undo
   lastEdit={id:curId, prev:{name:p.name,sex:p.sex,deceased:p.deceased,birth:p.birth,death:p.death,city:p.city,note:p.note}};
@@ -594,7 +594,7 @@ function saveEd(){
   p.death=document.getElementById('edd').value.trim();
   p.city=document.getElementById('ec').value.trim();
   p.note=document.getElementById('enote').value.trim();
-  persistTree();
+  await persistTree();
   closeP();render(ROOT);
   setTimeout(function(){
     showProfile(curId);
@@ -616,12 +616,12 @@ function showUndo(){
   window._undoTimer=setTimeout(function(){t.style.display='none';},5000);
 }
 
-function undoEdit(){
+async function undoEdit(){
   if(!lastEdit)return;
   var p=P[lastEdit.id];if(!p)return;
   Object.assign(p,lastEdit.prev);
   lastEdit=null;
-  persistTree();
+  await persistTree();
   document.getElementById('undoToast').style.display='none';
   render(ROOT);setTimeout(function(){showProfile(curId);},120);
 }
@@ -635,7 +635,7 @@ function showAdd(){
     btns.map(function(r){return'<button onclick="doAdd(\''+r[1]+'\')" style="padding:10px 14px;background:#f5f3ef;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;color:#1C1B19;width:100%">'+r[0]+'</button>';}).join('')+
     '</div><button class="ab s" style="margin-top:10px;width:calc(100%);margin-left:0;margin-right:0" onclick="showProfile(curId)">Cancel</button>';
 }
-function doAdd(type){
+async function doAdd(type){
   var p=P[curId];if(!p)return;
   var name=prompt('Enter full name:');
   if(!name||!name.trim())return;name=name.trim();
@@ -660,17 +660,17 @@ function doAdd(type){
     if(!p.parents)p.parents=[];p.parents.push(newId);
     PM[curId]=PM[curId]||[];PM[curId].push(newId);
   }
-  P[newId]=np;persistTree();closeP();render(ROOT);setTimeout(function(){showProfile(newId);},150);
+  P[newId]=np;await persistTree();closeP();render(ROOT);setTimeout(function(){showProfile(newId);},150);
 }
 
-function delP(){
+async function delP(){
   var p=P[curId];if(!p)return;
   if(!confirm('Delete "'+p.name+'"?\nThis cannot be undone.'))return;
   (PM[curId]||[]).forEach(function(pid){var par=P[pid];if(par)par.children=(par.children||[]).filter(function(c){return c!==curId;});});
   (p.spouses||[]).forEach(function(sid){var sp=P[sid];if(sp)sp.spouses=(sp.spouses||[]).filter(function(s){return s!==curId;});});
   (p.children||[]).forEach(function(cid){PM[cid]=(PM[cid]||[]).filter(function(pp){return pp!==curId;});var ch=P[cid];if(ch)ch.parents=(ch.parents||[]).filter(function(pp){return pp!==curId;});});
   delete P[curId];delete PM[curId];
-  persistTree();
+  await persistTree();
   closeP();render(ROOT);
 }
 
