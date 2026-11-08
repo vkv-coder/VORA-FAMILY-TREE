@@ -149,11 +149,19 @@ header{background:linear-gradient(135deg,#1a3a5c 0%,#2c5f8a 100%);padding:10px 1
     <div class="pe" id="pe"></div>
     <button class="pg" onclick="doPin()">Unlock</button>
     <div style="text-align:center;margin-top:12px">
-      <a href="#" id="forgotPinLink" onclick="document.getElementById('forgotPinLink').style.display='none';document.getElementById('forgotPinMsg').style.display='block';return false;" style="font-size:12px;text-decoration:underline;color:inherit">Forgot PIN?</a>
+      <a href="#" id="forgotPinLink" onclick="showForgotStep1();return false;" style="font-size:12px;text-decoration:underline;color:inherit">Forgot PIN?</a>
     </div>
-    <p id="forgotPinMsg" style="display:none;text-align:center;margin-top:8px;font-size:11px;opacity:0.8">
-      Write to <a href="mailto:vkvcoder.support@gmail.com">vkvcoder.support@gmail.com</a> and your family's PIN will be sent to you.
-    </p>
+    <div id="forgotStep1" style="display:none;margin-top:10px">
+      <input class="pi" id="forgotEmail" type="email" placeholder="Your email" style="font-size:13px;letter-spacing:normal">
+      <div class="pe" id="forgotErr1"></div>
+      <button class="pg" onclick="sendResetCode()">Send reset code</button>
+    </div>
+    <div id="forgotStep2" style="display:none;margin-top:10px">
+      <input class="pi" id="resetCode" type="text" maxlength="6" placeholder="6-digit code" style="font-size:16px;letter-spacing:4px">
+      <input class="pi" id="newPin" type="password" maxlength="4" placeholder="New 4-digit PIN" style="margin-top:8px">
+      <div class="pe" id="forgotErr2"></div>
+      <button class="pg" onclick="submitNewPin()">Set new PIN</button>
+    </div>
   </div>
 </div>
 <script>
@@ -556,6 +564,48 @@ async function doPin(){
     document.getElementById('pe').textContent='';
     if(pending){var fn=pending;pending=null;window[fn]();}
   }else{document.getElementById('pe').textContent='Wrong PIN';}
+}
+function showForgotStep1(){
+  document.getElementById('forgotPinLink').style.display='none';
+  document.getElementById('forgotStep1').style.display='block';
+}
+async function sendResetCode(){
+  var email=document.getElementById('forgotEmail').value.trim();
+  var err=document.getElementById('forgotErr1');
+  err.style.color='';err.textContent='';
+  if(!email){err.textContent='Enter your email.';return;}
+  err.textContent='Sending...';
+  var ok=false;
+  try{
+    var res=await sbTree.rpc('ft_request_pin_reset',{p_slug:TREE_SLUG,p_email:email});
+    ok=!!res.data;
+  }catch(e){ok=false;}
+  if(!ok){err.textContent='That email is not recognised for this tree.';return;}
+  err.textContent='';
+  document.getElementById('forgotStep1').style.display='none';
+  var step2=document.getElementById('forgotStep2');
+  step2.style.display='block';
+  step2.dataset.email=email;
+}
+async function submitNewPin(){
+  var step2=document.getElementById('forgotStep2');
+  var email=step2.dataset.email;
+  var code=document.getElementById('resetCode').value.trim();
+  var newPin=document.getElementById('newPin').value.trim();
+  var err=document.getElementById('forgotErr2');
+  err.style.color='';err.textContent='';
+  if(!code||!newPin){err.textContent='Enter the code and a new PIN.';return;}
+  err.textContent='Checking...';
+  var ok=false;
+  try{
+    var res=await sbTree.rpc('ft_reset_pin',{p_slug:TREE_SLUG,p_email:email,p_code:code,p_new_pin:newPin});
+    ok=!!res.data;
+  }catch(e){ok=false;}
+  if(!ok){err.textContent='Invalid or expired code.';return;}
+  err.style.color='green';
+  err.textContent='PIN updated! Enter it above to unlock.';
+  step2.style.display='none';
+  document.getElementById('pi').value='';
 }
 async function persistTree(){
   try{
